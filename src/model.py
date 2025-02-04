@@ -2,6 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .model_utils import Adapter, AttentionBlock, MLP, AdaptedTimesformerBlock
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class CSTAOutput:
+    logits: torch.FloatTensor = None
+    predictions: torch.FloatTensor = None
+    ce_loss: Optional[torch.FloatTensor] = None
 
 class CSTA(nn.Module):
     def __init__(self, num_frames, img_size, patch_size, dim, num_classes, num_layers=12, num_channels = 3):
@@ -58,7 +66,7 @@ class CSTA(nn.Module):
                 for param in self.spatial_adapters[block_idx][task_idx].parameters():
                     param.requires_grad = False
 
-    def forward(self, x):
+    def forward(self, x, targets=None):
         B, T, C, H, W = x.shape
 
         if H != W:
@@ -90,8 +98,16 @@ class CSTA(nn.Module):
         outputs = []
         for classifier in self.classifiers:
             outputs.append(classifier(x))
-            
+
         final_logits = torch.cat(outputs, dim=1)
+        # cross entropy loss
+        ce_loss = None
+        if targets is not None:
+            ce_loss = F.cross_entropy(final_logits, targets)
         predictions = torch.softmax(final_logits, dim=1)
-        
-        return predictions
+
+        return CSTAOutput(
+            logits = final_logits,
+            ce_loss = ce_loss,
+            predictions = predictions,
+        )

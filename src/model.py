@@ -29,11 +29,9 @@ class CSTA(nn.Module):
         self.current_task = 0
 
     def add_new_task_components(self, num_new_classes):
-        # add classifier
         new_classifier = nn.Linear(self.classifiers[-1].in_features, num_new_classes)
         self.classifiers.append(new_classifier)
         
-        # add adapters to each block
         dim = self.pos_embed.shape[-1]
         for block_idx in range(len(self.blocks)):
             self.temporal_adapters[block_idx].append(Adapter(dim))
@@ -89,9 +87,11 @@ class CSTA(nn.Module):
             x = block.norm(x + block.mlp(x))
 
         x = x[:, 0]
-
         outputs = []
         for classifier in self.classifiers:
             outputs.append(classifier(x))
             
-        return outputs
+        final_logits = torch.cat(outputs, dim=1)
+        predictions = torch.softmax(final_logits, dim=1)
+        
+        return predictions

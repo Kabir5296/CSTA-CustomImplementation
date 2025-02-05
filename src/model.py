@@ -179,13 +179,13 @@ class CSTA(nn.Module):
         elif H != self.img_size:
             raise ValueError('Input tensor has incorrect height and width')
 
-        x = x.reshape(B * T, C, H, W)       # reshape to (B * T, C, H, W) for patch embedding
-        x = self.patch_embed(x)             # shape: B*T, dim, H//patch_size, W//patch_size
-        x = x.flatten(2).transpose(1, 2)    # shape: B*T, (H//patch_size)*(W//patch_size), dim
-        x = x.reshape(B, -1, self.dim)      # shape: B, T*(H//patch_size)*(W//patch_size), dim
-        
-        cls_tokens = self.cls_token.expand(B, -1, -1)
-        x = torch.cat((cls_tokens, x), dim=1)
+        x = x.reshape(B * T, C, H, W)                       # reshape to (B * T, C, H, W) for patch embedding
+        x = self.patch_embed(x)                             # shape: B*T, dim, H//patch_size, W//patch_size
+        x = x.flatten(2).transpose(1, 2)                    # shape: B*T, num_patches, dim : num_patches = (H/patch_size)*(W/patch_size)
+        x = x.view(B, T, self.num_patches, self.dim)        # shape: B, T, num_patches, dim
+
+        cls_tokens = self.cls_token.expand(B, T, -1, -1)    # shape: B, T, 1, dim
+        x = torch.cat((cls_tokens, x), dim=2)               # shape: B, T, num_patches+1, dim
 
         temporal_features = []
         spatial_features = []

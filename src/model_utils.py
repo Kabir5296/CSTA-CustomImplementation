@@ -11,7 +11,27 @@ class Adapter(nn.Module):
 
     def forward(self, x):
         return self.fc_up(self.gelu(self.fc_down(x)))
+
+class TemporalMultiheadAttention(nn.module):
+    def __init__(self, dim, num_heads=8):
+        self.msa = nn.MultiheadAttention(dim, num_heads)
     
+    def forward(self, x):
+        # x is the patches added with cls token, shape: B, T, num_patches + 1, dim
+        B, T, N, D = x.shape
+        x = x.permute(0,2,1,3)      # B, num_patches+1, T, dim
+        x = x.reshape(B*N, T, D)    # B*(num_patches+1), T, dim
+
+        temporal_attn, _= self.msa(x,x,x)
+        return temporal_attn.reshape(B,N,T,D).permute(0,2,1,3)
+    
+class SpatialMultiheadAttention(nn.module):
+    def __init__(self, dim, num_heads=8):
+        self.msa = nn.MultiheadAttention(dim, num_heads)
+    
+    def forward(self, x):
+        return self.msa(x,x,x)
+
 class TimesFormerBlock(nn.Module):
     def __init__(self, dim, num_heads=8, factor=4):
         super().__init__()
@@ -25,8 +45,8 @@ class TimesFormerBlock(nn.Module):
         x = NORM(MLP(x) + x)
         """
 
-        self.temporal_msa = nn.MultiheadAttention(dim, num_heads)
-        self.spatial_msa = nn.MultiheadAttention(dim, num_heads)
+        self.temporal_msa = TemporalMultiheadAttention(dim, num_heads)
+        self.spatial_msa = SpatialMultiheadAttention(dim, num_heads)
         
         self.mlp = nn.Sequential(
             nn.Linear(dim, dim * factor),

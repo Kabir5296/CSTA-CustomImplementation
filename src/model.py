@@ -28,6 +28,7 @@ class CSTA(nn.Module):
                  num_heads = 8,
                  init_with_adapters = True,
                  calculate_distil_loss = False,
+                 calculate_lt_ls_loss = False,
                  miu_d = 1.0,
                  miu_t = 1.0,
                  miu_s = 1.0,
@@ -62,6 +63,7 @@ class CSTA(nn.Module):
         self.dim = dim
         self.img_size = img_size
         self.calculate_distil_loss = calculate_distil_loss
+        self.calculate_lt_ls_loss = calculate_lt_ls_loss
         self.miu_d = miu_d
         self.miu_t = miu_t
         self.miu_s = miu_s
@@ -126,6 +128,7 @@ class CSTA(nn.Module):
         self.add_one_adapter_per_block()
         self.add_one_new_classifier(num_new_classes)
         self.calculate_distil_loss = True
+        self.calculate_lt_ls_loss = True
         self.model_attributes = self.get_numbers()
 
     def freeze_all_but_last(self):
@@ -187,9 +190,6 @@ class CSTA(nn.Module):
         cls_tokens = self.cls_token.expand(B, T, -1, -1)    # shape: B, T, 1, dim
         x = torch.cat((cls_tokens, x), dim=2)               # shape: B, T, num_patches+1, dim
 
-        temporal_features = []
-        spatial_features = []
-
         loss = ce_loss = distil_loss = lt_loss = ls_loss = None
         x_old = x
         for block_idx, block in enumerate(self.blocks):
@@ -226,9 +226,6 @@ class CSTA(nn.Module):
                 x_old = self.norm(x_old + block_s_msa_old + sum(spatial_adapter_features_old))
 
                 x_old = self.norm(block.mlp(x_old) + x_old)
-
-        # temporal_features = torch.stack(temporal_features, dim=1)
-        # spatial_features = torch.stack(spatial_features, dim=1)
 
         x = x[:, :, 0, :].mean(dim=1)
         x_old = x_old[:, :, 0, :].mean(dim=1)

@@ -1,5 +1,5 @@
 from src import CSTA
-import torch
+import torch, os
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader

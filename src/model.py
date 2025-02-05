@@ -171,18 +171,19 @@ class CSTA(nn.Module):
 
         loss = ce_loss = distil_loss = lt_loss = ls_loss = None
         x_old = x
+
         for block_idx, block in enumerate(self.blocks):
             # x goes to t_msa.
             # t_msa output goes to all adapters (stored in temporal adapter features list)
             # the final temporal output is the sum of all temporal adapter outputs, plus the t_msa and the input normalized
-            block_t_msa, _ = block.temporal_msa(x)
+            block_t_msa = block.temporal_msa(x)
             temporal_adapter_features = []
             for temporal_adapters in self.temporal_adapters[block_idx]:
                 temporal_adapter_features.append(temporal_adapters(block_t_msa))
             x = self.norm(x + block_t_msa + sum(temporal_adapter_features))
 
             # same as before but for spatial msa and adapters
-            block_s_msa, _ = block.spatial_msa(x)
+            block_s_msa = block.spatial_msa(x)
             spatial_adapter_features = []
             for spatial_adapters in self.spatial_adapters[block_idx]:
                 spatial_adapter_features.append(spatial_adapters(block_s_msa))
@@ -192,13 +193,13 @@ class CSTA(nn.Module):
             x = self.norm(block.mlp(x) + x)
 
             if self.calculate_distil_loss and targets is not None:
-                block_t_msa_old, _ = block.temporal_msa(x_old)
+                block_t_msa_old = block.temporal_msa(x_old)
                 temporal_adapter_features_old = []
                 for temporal_adapters in self.temporal_adapters[block_idx][:-1]:
                     temporal_adapter_features_old.append(temporal_adapters(block_t_msa_old))
                 x_old = self.norm(x_old + block_t_msa_old + sum(temporal_adapter_features_old))
 
-                block_s_msa_old, _ = block.spatial_msa(x_old)
+                block_s_msa_old = block.spatial_msa(x_old)
                 spatial_adapter_features_old = []
                 for spatial_adapters in self.spatial_adapters[block_idx][:-1]:
                     spatial_adapter_features_old.append(spatial_adapters(block_s_msa_old))

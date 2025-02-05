@@ -32,6 +32,13 @@ class DatasetConfig:
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
     num_frames = CSTAConfig.num_frames
+    
+class TrainingConfigs:
+    training_batch_size = 10
+    evaluation_batch_size = 10
+    dataloader_num_workers = 4
+    dataloader_pin_memory = False
+    dataloader_persistent_workers = False
 
 ucf_train = pd.read_csv(DatasetConfig.ucf_dataset_training_path)
 
@@ -82,9 +89,10 @@ class VideoDataset(Dataset):
         }
     
 train_dataset = VideoDataset(ucf_train)
-train_dataloader = DataLoader(train_dataset, batch_size=10, shuffle=True, pin_memory=False, num_workers=4)
-
-for batch in train_dataloader:
-    out = model(**batch)
-    loss = out.loss.item()
-    loss.backward()
+train_dataloader = DataLoader(train_dataset, 
+                              batch_size=TrainingConfigs.training_batch_size, 
+                              shuffle=True, 
+                              pin_memory=TrainingConfigs.dataloader_pin_memory, 
+                              persistent_workers=TrainingConfigs.dataloader_persistent_workers,
+                              num_workers=TrainingConfigs.dataloader_num_workers,
+                              )

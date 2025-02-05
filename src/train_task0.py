@@ -19,6 +19,7 @@ class CSTAConfig:
     num_heads = 8                  # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
+    calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
     miu_d = 1.0                    # distillation loss weight
     miu_t = 1.0                    # lt loss weight (currently not implemented)
     miu_s = 1.0                    # ls loss weight (currently not implemented)
@@ -83,3 +84,7 @@ class VideoDataset(Dataset):
 train_dataset = VideoDataset(ucf_train)
 train_dataloader = DataLoader(train_dataset, batch_size=10, shuffle=True, pin_memory=False, num_workers=4)
 
+for batch in train_dataloader:
+    out = model(**batch)
+    loss = out.loss.item()
+    loss.backward()

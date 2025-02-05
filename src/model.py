@@ -11,7 +11,10 @@ class CSTAOutput:
     predictions: torch.FloatTensor = None
     ce_loss: Optional[torch.FloatTensor] = None
     distil_loss: Optional[torch.FloatTensor] = None
+    lt_loss: Optional[torch.FloatTensor] = None
+    ls_loss: Optional[torch.FloatTensor] = None
     last_hidden_state: Optional[torch.FloatTensor] = None
+    loss: Optional[torch.FloatTensor] = None
 
 class CSTA(nn.Module):
     def __init__(self, 
@@ -25,11 +28,42 @@ class CSTA(nn.Module):
                  num_heads = 8,
                  init_with_adapters = True,
                  calculate_distil_loss = False,
+                 miu_d = 1.0,
+                 miu_t = 1.0,
+                 miu_s = 1.0,
                  ):
         super().__init__()
+        """
+        CSTA model class.
+        Args:
+            num_frames: number of frames in video
+            img_size: size of input image, must be square shape
+            patch_size: size of patch to create from frames
+            dim: dimension of the model
+            num_classes: number of classes to initialize first classifier
+            num_layers: number of TimesFormer blocks
+            num_channels: number of channels in the input image, typically 3
+            num_heads: number of heads in attention, typically 8
+            init_with_adapters: whether to initialize the model with adapters. if true, default one adapter is added in the blocks.
+            calculate_distil_loss: whether to calculate the distillation loss. if true, distil calculation is done on the model without one last adapter. time complexity increases.
+            miu_d: weight of the distillation loss (hyperparameter)
+            miu_t: weight of the temporal loss (hyperparameter)
+            miu_s: weight of the spatial loss (hyperparameter)
+
+        Methods:
+            add_one_adapter_per_block: adds one adapter to each block in the model
+            add_one_new_classifier: adds one new classifier to the model
+            add_new_task_components: adds one adapter and one classifier to the model, sets calculate_distil_loss to True.
+            freeze_all_but_last: freezes all blocks, all adapters except the last, all classifiers except the last
+            get_distil_loss: calculates the distillation loss
+            forward: forward pass of the model
+        """
         self.dim = dim
         self.img_size = img_size
         self.calculate_distil_loss = calculate_distil_loss
+        self.miu_d = miu_d
+        self.miu_t = miu_t
+        self.miu_s = miu_s
 
         # process video to patches and add positional embeddings, class token
         self.num_patches = (img_size // patch_size) ** 2
@@ -114,6 +148,28 @@ class CSTA(nn.Module):
     def get_distil_loss(self, old_logits, new_logits):
         return F.kl_div(F.log_softmax(new_logits, dim=1), F.softmax(old_logits, dim=1), reduction='batchmean')
 
+    def get_relations(self, spatial_features, temporal_features, full_features):
+        clf_s, clf_f, clf_t = [], [], []
+        for classifier in self.classifiers:
+            clf_s.append(classifier(spatial_features))
+            clf_t.append(classifier(temporal_features))
+            clf_f.append(classifier(full_features))
+        
+        clf_s = torch.softmax(torch.cat(clf_s, dim=1), dim=1)
+        clf_f = torch.softmax(torch.cat(clf_f, dim=1), dim=1)
+        clf_t = torch.softmax(torch.cat(clf_t, dim=1), dim=1)
+
+        spatial_ratio = clf_s / clf_f
+        temporal_ratio = clf_t / clf_f
+        cosine_similarity = F.cosine_similarity(
+            clf_s.unsqueeze(1), 
+            clf_t.unsqueeze(1), 
+            dim=-1
+        ).squeeze()
+        RSi = torch.cat([spatial_ratio, cosine_similarity.unsqueeze(0)], dim=0)
+        RTi = torch.cat([temporal_ratio, cosine_similarity.unsqueeze(0)], dim=0)
+        return RSi, RTi
+
     def forward(self, x, targets=None):
         B, T, C, H, W = x.shape
 
@@ -144,7 +200,6 @@ class CSTA(nn.Module):
             for temporal_adapters in self.temporal_adapters[block_idx]:
                 temporal_adapter_features.append(temporal_adapters(block_t_msa))
             x = self.norm(x + block_t_msa + sum(temporal_adapter_features))
-            temporal_features.append(block_t_msa + sum(temporal_adapter_features))
 
             # same as before but for spatial msa and adapters
             block_s_msa, _ = block.spatial_msa(x,x,x)
@@ -152,12 +207,11 @@ class CSTA(nn.Module):
             for spatial_adapters in self.spatial_adapters[block_idx]:
                 spatial_adapter_features.append(spatial_adapters(block_s_msa))
             x = self.norm(x + block_s_msa + sum(spatial_adapter_features))
-            spatial_features.append(block_s_msa + sum(spatial_adapter_features))
 
             # final MLP
             x = self.norm(block.mlp(x) + x)
 
-            if (self.training or self.calculate_distil_loss) and targets is not None:
+            if self.calculate_distil_loss and targets is not None:
                 block_t_msa_old, _ = block.temporal_msa(x_old,x_old,x_old)
                 temporal_adapter_features_old = []
                 for temporal_adapters in self.temporal_adapters[block_idx][:-1]:
@@ -182,22 +236,28 @@ class CSTA(nn.Module):
 
         for classifier in self.classifiers:
             outputs.append(classifier(x))
-            if (self.training or self.calculate_distil_loss) and targets is not None:
+            if self.calculate_distil_loss and targets is not None:
                 outputs_old.append(classifier(x_old))
 
         final_logits = torch.cat(outputs, dim=1)
         predictions = torch.softmax(final_logits, dim=1)
 
-        # cross entropy loss
+        total_loss = []
         if targets is not None:
             ce_loss = F.cross_entropy(final_logits, targets)
-            if (self.training or self.calculate_distil_loss) and targets is not None:
+            total_loss.append(ce_loss)
+            if self.calculate_distil_loss and targets is not None:
                 distil_loss = self.get_distil_loss(torch.cat(outputs_old, dim=1), final_logits)
+                total_loss.append(self.miu_d * distil_loss) if distil_loss is not None else None
+            loss = sum(total_loss)
 
         return CSTAOutput(
             logits = final_logits,
+            loss = loss,
             ce_loss = ce_loss,
             distil_loss = distil_loss,
+            lt_loss = lt_loss,
+            ls_loss = ls_loss,
             predictions = predictions,
             last_hidden_state = x,
         )

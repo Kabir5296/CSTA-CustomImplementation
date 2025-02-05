@@ -33,9 +33,9 @@ class SpatialMultiheadAttention(nn.Module):
     
     def forward(self, x):
         B, T, N, D = x.shape
-        x = x.reshape(B * T, N, D).shape
+        x = x.reshape(B * T, N, D)
         x, _ = self.msa(x,x,x)
-        return x
+        return x.reshape(B,T,N,D)
 
 class TimesFormerBlock(nn.Module):
     def __init__(self, dim, num_heads=8, factor=4):

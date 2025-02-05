@@ -196,14 +196,14 @@ class CSTA(nn.Module):
             # x goes to t_msa.
             # t_msa output goes to all adapters (stored in temporal adapter features list)
             # the final temporal output is the sum of all temporal adapter outputs, plus the t_msa and the input normalized
-            block_t_msa, _ = block.temporal_msa(x,x,x)
+            block_t_msa, _ = block.temporal_msa(x)
             temporal_adapter_features = []
             for temporal_adapters in self.temporal_adapters[block_idx]:
                 temporal_adapter_features.append(temporal_adapters(block_t_msa))
             x = self.norm(x + block_t_msa + sum(temporal_adapter_features))
 
             # same as before but for spatial msa and adapters
-            block_s_msa, _ = block.spatial_msa(x,x,x)
+            block_s_msa, _ = block.spatial_msa(x)
             spatial_adapter_features = []
             for spatial_adapters in self.spatial_adapters[block_idx]:
                 spatial_adapter_features.append(spatial_adapters(block_s_msa))
@@ -213,13 +213,13 @@ class CSTA(nn.Module):
             x = self.norm(block.mlp(x) + x)
 
             if self.calculate_distil_loss and targets is not None:
-                block_t_msa_old, _ = block.temporal_msa(x_old,x_old,x_old)
+                block_t_msa_old, _ = block.temporal_msa(x_old)
                 temporal_adapter_features_old = []
                 for temporal_adapters in self.temporal_adapters[block_idx][:-1]:
                     temporal_adapter_features_old.append(temporal_adapters(block_t_msa_old))
                 x_old = self.norm(x_old + block_t_msa_old + sum(temporal_adapter_features_old))
 
-                block_s_msa_old, _ = block.spatial_msa(x_old,x_old,x_old)
+                block_s_msa_old, _ = block.spatial_msa(x_old)
                 spatial_adapter_features_old = []
                 for spatial_adapters in self.spatial_adapters[block_idx][:-1]:
                     spatial_adapter_features_old.append(spatial_adapters(block_s_msa_old))
@@ -230,8 +230,8 @@ class CSTA(nn.Module):
         # temporal_features = torch.stack(temporal_features, dim=1)
         # spatial_features = torch.stack(spatial_features, dim=1)
 
-        x = x[:, 0]
-        x_old = x_old[:, 0]
+        x = x[:, :, 0, :].mean(dim=1)
+        x_old = x_old[:, :, 0, :].mean(dim=1)
         outputs = []
         outputs_old = []
 
@@ -241,7 +241,7 @@ class CSTA(nn.Module):
                 outputs_old.append(classifier(x_old))
 
         final_logits = torch.cat(outputs, dim=1)
-        predictions = torch.softmax(final_logits, dim=1)
+        predictions = torch.softmax(final_logits, dim=-1)
 
         total_loss = []
         if targets is not None:

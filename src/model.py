@@ -17,12 +17,12 @@ class CSTAOutput:
     loss: Optional[torch.FloatTensor] = None
 
 class CSTA(nn.Module):
-    def __init__(self, 
-                 num_frames, 
-                 img_size, 
-                 patch_size, 
-                 dim, 
-                 num_classes, 
+    def __init__(self,
+                 num_classes,
+                 num_frames = 8, 
+                 img_size = 256, 
+                 patch_size = 16, 
+                 dim = 768, 
                  num_layers=12, 
                  num_channels = 3,
                  num_heads = 8,
@@ -31,6 +31,7 @@ class CSTA(nn.Module):
                  miu_d = 1.0,
                  miu_t = 1.0,
                  miu_s = 1.0,
+                 **kwargs,
                  ):
         super().__init__()
         """
@@ -189,7 +190,7 @@ class CSTA(nn.Module):
         temporal_features = []
         spatial_features = []
 
-        ce_loss = distil_loss = lt_loss = ls_loss = None
+        loss = ce_loss = distil_loss = lt_loss = ls_loss = None
         x_old = x
         for block_idx, block in enumerate(self.blocks):
             # x goes to t_msa.
@@ -226,8 +227,8 @@ class CSTA(nn.Module):
 
                 x_old = self.norm(block.mlp(x_old) + x_old)
 
-        temporal_features = torch.stack(temporal_features, dim=1)
-        spatial_features = torch.stack(spatial_features, dim=1)
+        # temporal_features = torch.stack(temporal_features, dim=1)
+        # spatial_features = torch.stack(spatial_features, dim=1)
 
         x = x[:, 0]
         x_old = x_old[:, 0]

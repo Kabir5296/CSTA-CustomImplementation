@@ -16,7 +16,7 @@ import torchvision.transforms as transforms
 from train_task0 import VideoDataset, train_epoch, evaluate, set_all_seeds
 
 logging.basicConfig(
-    filename="logs/finetune1.log",
+    filename="logs/train.log",
     filemode="a",
     level=logging.INFO,
 )

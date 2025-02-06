@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 import pandas as pd
 from abc import abstractmethod
 from torchvision.io import read_video
@@ -36,13 +36,13 @@ for index, label in enumerate(all_labels):
 
 class CSTAConfig:
     num_frames = 8                 # taking a lower frame numbers for initial training
-    img_size = 256                 # the frames are sized at 256*256
+    img_size = 224                 # the frames are sized at 256*256
     patch_size = 16                # patch size
     dim = 512                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
     num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
-    num_heads = 8                  # using 8 heads in attention
+    num_heads = 12                 # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
@@ -61,9 +61,9 @@ class DatasetConfig:
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 4
+    num_training_epochs = 30
     training_batch_size = 4
-    evaluation_batch_size = 5
+    evaluation_batch_size = 4
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False

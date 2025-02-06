@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from einops import rearrange
 
 class Adapter(nn.Module):
     def __init__(self, dim, reduction_factor=4):
@@ -15,27 +16,41 @@ class Adapter(nn.Module):
 class TemporalMultiheadAttention(nn.Module):
     def __init__(self, dim, num_heads=8):
         super().__init__()
+        self.dim = dim
+        self.layer_norm = nn.Linear(dim,dim)
         self.msa = nn.MultiheadAttention(dim, num_heads)
+        self.proj_norm = nn.Linear(dim,dim)
     
-    def forward(self, x):
-        # x is the patches added with cls token, shape: B, T, num_patches + 1, dim
-        B, T, N, D = x.shape
-        x = x.permute(0,2,1,3)      # B, num_patches+1, T, dim
-        x = x.reshape(B*N, T, D)    # B*(num_patches+1), T, dim
+    def temporal_preprocess(self, x, B, T, num_patches):
+        # take input x in B*T, num_patches+1, dim format. convert to B*num_patches, T, dim and returns
+        cls_tokens, x_temporal = x[:, :1, :], x[:, 1:, :]
+        x_temporal.reshape([B*num_patches, T, self.dim])        # shape: B*num_patches, T, dim
+        return x_temporal, cls_tokens
+    
+    def forward(self, x, B, T, num_patches):
+        # x is the patches added with cls token, shape: B*T, num_patches+1, dim
+        x, cls_token = self.temporal_preprocess(x,B,T,num_patches)
 
-        x, _= self.msa(x,x,x)
-        return x.reshape(B,N,T,D).permute(0,2,1,3)
+        x = self.layer_norm(x)      # shape: B*num_patches, T, dim
+        x, _= self.msa(x,x,x)       # shape: B*num_patches, T, dim
+        x = self.proj_norm(x)       # shape: B*num_patches, T, dim
+        
+        x = x.reshape([B*T, num_patches, self.dim]) # shape: B*T, num_patches, dim
+        x = torch.cat((cls_token, x), dim=1)       # shape: B*T, num_patches+1, dim 
+        return x
     
 class SpatialMultiheadAttention(nn.Module):
     def __init__(self, dim, num_heads=8):
         super().__init__()
+        self.layer_norm = nn.Linear(dim,dim)
         self.msa = nn.MultiheadAttention(dim, num_heads)
+        self.proj_norm = nn.Linear(dim,dim)
     
     def forward(self, x):
-        B, T, N, D = x.shape
-        x = x.reshape(B * T, N, D)
-        x, _ = self.msa(x,x,x)
-        return x.reshape(B,T,N,D)
+        x = self.layer_norm(x)
+        x, _= self.msa(x,x,x)
+        x = self.proj_norm(x)
+        return x
 
 class TimesFormerBlock(nn.Module):
     def __init__(self, dim, num_heads=8, factor=4):

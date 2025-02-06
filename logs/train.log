@@ -63,3 +63,26 @@ INFO:root:total_classifiers : 1
 INFO:root:total_adapters : 24
 INFO:root:total_params : 54142003
 INFO:root:--------------------------------------------------
+INFO:root:Training loss for epoch 0: 4.235081170194892, accuracy: 0.0207
+INFO:root:Evaluation loss for epoch 0: 3.972376330145474, accuracy: 0.0230
+INFO:root:Training loss for epoch 1: 3.9924383910570276, accuracy: 0.0244
+INFO:root:Evaluation loss for epoch 1: 3.9844507677801726, accuracy: 0.0379
+INFO:root:Training loss for epoch 2: 3.988815659202189, accuracy: 0.0280
+INFO:root:Evaluation loss for epoch 2: 3.9603190805720185, accuracy: 0.0207
+INFO:root:Training loss for epoch 3: 3.985523698516705, accuracy: 0.0236
+INFO:root:Evaluation loss for epoch 3: 4.013314082704741, accuracy: 0.0230
+INFO:root:
+
+Training starting on: 07/02/2025, 02:56:40
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 66749491
+INFO:root:--------------------------------------------------

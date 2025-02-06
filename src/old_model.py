@@ -4,7 +4,6 @@ import torch.nn.functional as F
 from .model_utils import Adapter, TimesFormerBlock
 from dataclasses import dataclass
 from typing import Optional
-from einops import rearrange
 
 @dataclass
 class CSTAOutput:
@@ -75,10 +74,10 @@ class CSTA(nn.Module):
         # process video to patches and add positional embeddings, class token
         self.num_patches = (img_size // patch_size) ** 2
         self.patch_embed = nn.Conv2d(num_channels, dim, kernel_size=patch_size, stride=patch_size)
-        self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, dim))
         self.norm = nn.LayerNorm(dim)
         self.temporal_pos_embed = nn.Parameter(torch.randn(1, self.num_frames, 1, self.dim))
-        self.spatial_pos_embed = nn.Parameter(torch.randn(1, self.num_patches + 1, self.dim))
+        self.spatial_pos_embed = nn.Parameter(torch.randn(1, 1, self.num_patches + 1, self.dim))
 
         # keeping a list of adapters. Each transformer block has a list of adapters
         self.temporal_adapters = nn.ModuleList([nn.ModuleList() for _ in range(num_layers)])
@@ -156,7 +155,7 @@ class CSTA(nn.Module):
 
     def get_distil_loss(self, old_logits, new_logits):
         return F.kl_div(F.log_softmax(new_logits, dim=1), F.softmax(old_logits, dim=1), reduction='batchmean')
-        
+
     def forward(self, x, targets=None):
         B, T, C, H, W = x.shape
 
@@ -168,23 +167,20 @@ class CSTA(nn.Module):
         x = x.reshape(B * T, C, H, W)                       # reshape to (B * T, C, H, W) for patch embedding
         x = self.patch_embed(x)                             # shape: B*T, dim, H//patch_size, W//patch_size
         x = x.flatten(2).transpose(1, 2)                    # shape: B*T, num_patches, dim : num_patches = (H/patch_size)*(W/patch_size)
-        # x = x.view(B, T, self.num_patches, self.dim)        # shape: B, T, num_patches, dim
+        x = x.view(B, T, self.num_patches, self.dim)        # shape: B, T, num_patches, dim
 
-        cls_tokens = self.cls_token.expand(x.size(0), -1, -1)           # shape: B*T, 1, dim
-        x = torch.cat((cls_tokens, x), dim=1)                           # shape: B*T, num_patches+1, dim
-        
-        x = x.reshape([B,T,self.num_patches+1,self.dim])                # reshape for adding positional embeddings
+        cls_tokens = self.cls_token.expand(B, T, -1, -1)    # shape: B, T, 1, dim
+        x = torch.cat((cls_tokens, x), dim=2)               # shape: B, T, num_patches+1, dim
         x = x + self.spatial_pos_embed + self.temporal_pos_embed
-        x = x.reshape([B*T,self.num_patches+1,self.dim])                # reshape back to: B*T, num_patches+1, dim
-        
+
         loss = ce_loss = distil_loss = lt_loss = ls_loss = accuracy = None
-        x_old = x       # B*T, num_patches + 1(cls), dim
+        x_old = x
 
         for block_idx, block in enumerate(self.blocks):
             # x goes to t_msa.
             # t_msa output goes to all adapters (stored in temporal adapter features list)
             # the final temporal output is the sum of all temporal adapter outputs, plus the t_msa and the input normalized
-            block_t_msa = block.temporal_msa(x, B, T, self.num_patches)
+            block_t_msa = block.temporal_msa(x)
             temporal_adapter_features = []
             for temporal_adapters in self.temporal_adapters[block_idx]:
                 temporal_adapter_features.append(temporal_adapters(block_t_msa))
@@ -201,7 +197,7 @@ class CSTA(nn.Module):
             x = self.norm(block.mlp(x) + x)
 
             if self.calculate_distil_loss and targets is not None:
-                block_t_msa_old = block.temporal_msa(x_old, B, T, self.num_patches)
+                block_t_msa_old = block.temporal_msa(x_old)
                 temporal_adapter_features_old = []
                 for temporal_adapters in self.temporal_adapters[block_idx][:-1]:
                     temporal_adapter_features_old.append(temporal_adapters(block_t_msa_old))
@@ -215,9 +211,8 @@ class CSTA(nn.Module):
 
                 x_old = self.norm(block.mlp(x_old) + x_old)
 
-        x = x[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1) 
-        x_old = x_old[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1)
-
+        x = x[:, :, 0, :].mean(dim=1)
+        x_old = x_old[:, :, 0, :].mean(dim=1)
         outputs = []
         outputs_old = []
 
@@ -226,7 +221,7 @@ class CSTA(nn.Module):
             if self.calculate_distil_loss and targets is not None:
                 outputs_old.append(classifier(x_old))
 
-        final_logits = torch.cat(outputs, dim=-1)
+        final_logits = torch.cat(outputs, dim=1)
         predictions = torch.softmax(final_logits, dim=-1)
         total_loss = []
         if targets is not None:

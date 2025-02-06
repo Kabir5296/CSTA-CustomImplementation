@@ -1,5 +1,6 @@
 from src import CSTA
-import torch, os
+from accelerate import Accelerator
+import torch, os, tqdm, accelerate
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
@@ -14,6 +15,7 @@ ucf_dataset_test_path = "DATA/UCF101/test.csv"
 ucf_dataset_valid_path = "DATA/UCF101/val.csv"
 
 ucf_train = pd.read_csv(ucf_dataset_training_path)
+ucf_valid = pd.read_csv(ucf_dataset_valid_path)
 
 all_labels = sorted(ucf_train['label'].unique().tolist())
 id2label = {}
@@ -48,6 +50,7 @@ class DatasetConfig:
     label2id = label2id
     
 class TrainingConfigs:
+    num_training_epochs = 10
     training_batch_size = 10
     evaluation_batch_size = 10
     dataloader_num_workers = 4
@@ -57,7 +60,8 @@ class TrainingConfigs:
     adamw_betas = (0.9, 0.999)
     weight_decay = 0.01
     eta_min = 1e-6
-    T_max = 50
+    T_max = 10
+    model_output_dir = "Outputs/Models/Trial1"
 
 class VideoDataset(Dataset):
     def __init__(self, 
@@ -110,21 +114,110 @@ class VideoDataset(Dataset):
             "input_frames": processed_frames,
             "label": self.label2id[label],
         }
+
+def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
+    model.train()
+    total_loss = 0
     
-train_dataset = VideoDataset(ucf_train)
-train_dataloader = DataLoader(train_dataset, 
-                              batch_size=TrainingConfigs.training_batch_size, 
-                              shuffle=True, 
-                              pin_memory=TrainingConfigs.dataloader_pin_memory, 
-                              persistent_workers=TrainingConfigs.dataloader_persistent_workers,
-                              num_workers=TrainingConfigs.dataloader_num_workers,
-                              )
+    progress_bar = tqdm(
+        total=len(train_dataloader),
+        disable=not accelerator.is_local_main_process,
+        desc=f"Training epoch {epoch}"
+    )
+    
+    for step, batch in enumerate(train_dataloader):
+        input_frames = batch["input_frames"]
+        labels = batch["label"]
+        
+        with accelerator.accumulate(model):
+            outputs = model(input_frames, labels)
+            loss = outputs.loss
+            
+            accelerator.backward(loss)
+            optimizer.step()
+            optimizer.zero_grad()
+            
+        total_loss += loss.detach().float()
+        
+        progress_bar.update(1)
+        progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+    
+    progress_bar.close()
+    return total_loss.item() / len(train_dataloader)
 
-# For task 0 training, the default configs are fine. Need to check though: 
-# you must have one adapter per blocks
-# distil, ls, and lt losses calculations are set to zero
-model = CSTA(**vars(CSTAConfig))
-print(model.model_attributes)
+def evaluate(model, eval_dataloader, accelerator):
+    model.eval()
+    total_loss = 0
+    
+    for batch in tqdm(eval_dataloader, disable=not accelerator.is_local_main_process, desc="Evaluating"):
+        with torch.no_grad():
+            input_frames = batch["input_frames"]
+            labels = batch["label"]
+            outputs = model(input_frames, labels)
+            loss = outputs.loss
+            
+        total_loss += loss.detach().float()
+    
+    return total_loss.item() / len(eval_dataloader)
 
-optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
-scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
+def main():
+    train_dataset = VideoDataset(ucf_train)
+    valid_dataset = VideoDataset(ucf_valid)
+
+    train_dataloader = DataLoader(train_dataset, 
+                                batch_size=TrainingConfigs.training_batch_size, 
+                                shuffle=True, 
+                                pin_memory=TrainingConfigs.dataloader_pin_memory, 
+                                persistent_workers=TrainingConfigs.dataloader_persistent_workers,
+                                num_workers=TrainingConfigs.dataloader_num_workers,
+                                )
+    valid_dataloader = DataLoader(valid_dataset, 
+                                batch_size=TrainingConfigs.evaluation_batch_size, 
+                                shuffle=False,
+                                pin_memory=TrainingConfigs.dataloader_pin_memory, 
+                                persistent_workers=TrainingConfigs.dataloader_persistent_workers,
+                                num_workers=TrainingConfigs.dataloader_num_workers,
+                                )
+    
+    # For task 0 training, the default configs are fine. Need to check though: 
+    # you must have one adapter per blocks
+    # distil, ls, and lt losses calculations are set to zero
+    model = CSTA(**vars(CSTAConfig))
+    att = model.model_attributes
+    for value in att:
+        print(f"{value} : {att[value]}")
+
+    optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
+    
+    accelerator = Accelerator()
+    model, optimizer, train_dataloader, eval_dataloader, scheduler = accelerator.prepare(
+            model, optimizer, train_dataloader, valid_dataloader, scheduler
+        )
+    
+    if not os.path.exists(TrainingConfigs.model_output_dir):
+        os.makedirs(TrainingConfigs.model_output_dir, exist_ok=True)
+    
+    best_loss = float('inf')
+    for epoch in range(TrainingConfigs.num_training_epochs):
+        train_loss = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
+        eval_loss = evaluate(model, eval_dataloader, accelerator)
+        
+        if eval_loss < best_loss:
+            best_loss = eval_loss
+            accelerator.wait_for_everyone()
+            unwrapped_model = accelerator.unwrap_model(model)
+            accelerator.save(
+                {
+                    "model": unwrapped_model.state_dict(),
+                    "optimizer": optimizer.state_dict(),
+                    "scheduler": scheduler.state_dict(),
+                    "epoch": epoch,
+                },
+                os.path.join(TrainingConfigs.model_output_dir, "best_model.pth")
+            )
+        scheduler.step()
+    accelerator.end_training()
+    
+if __name__ == "__main__":
+    main()

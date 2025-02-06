@@ -68,13 +68,15 @@ class CSTA(nn.Module):
         self.miu_d = miu_d
         self.miu_t = miu_t
         self.miu_s = miu_s
+        self.num_frames = num_frames
 
         # process video to patches and add positional embeddings, class token
         self.num_patches = (img_size // patch_size) ** 2
         self.patch_embed = nn.Conv2d(num_channels, dim, kernel_size=patch_size, stride=patch_size)
-        self.pos_embed = nn.Parameter(torch.randn(self.num_patches * num_frames + 1, dim))
         self.cls_token = nn.Parameter(torch.zeros(1, 1, dim))
         self.norm = nn.LayerNorm(dim)
+        self.temporal_pos_embed = nn.Parameter(torch.randn(1, self.num_frames, 1, self.dim))
+        self.spatial_pos_embed = nn.Parameter(torch.randn(1, 1, self.num_patches + 1, self.dim))
 
         # keeping a list of adapters. Each transformer block has a list of adapters
         self.temporal_adapters = nn.ModuleList([nn.ModuleList() for _ in range(num_layers)])
@@ -168,6 +170,7 @@ class CSTA(nn.Module):
 
         cls_tokens = self.cls_token.expand(B, T, -1, -1)    # shape: B, T, 1, dim
         x = torch.cat((cls_tokens, x), dim=2)               # shape: B, T, num_patches+1, dim
+        x = x + self.spatial_pos_embed + self.temporal_pos_embed
 
         loss = ce_loss = distil_loss = lt_loss = ls_loss = None
         x_old = x

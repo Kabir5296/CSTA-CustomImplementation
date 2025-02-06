@@ -1,6 +1,6 @@
 from src.model import CSTA
 from accelerate import Accelerator
-import torch, os, random, accelerate
+import torch, os, random, accelerate, logging, datetime
 from tqdm import tqdm
 import torch.nn as nn
 import numpy as np
@@ -14,6 +14,13 @@ from warnings import filterwarnings
 import torchvision.transforms as transforms
 
 from train_task0 import VideoDataset, train_epoch, evaluate, set_all_seeds
+
+logging.basicConfig(
+    filename="logs/train.log",
+    filemode="a",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 ucf_task1_train = "DATA/UCF101/task_1/train.csv"
 ucf_task1_valid = "DATA/UCF101/task_1/val.csv"
@@ -64,8 +71,8 @@ class DatasetConfig:
 class TrainingConfigs:
     random_seed = 42
     num_training_epochs = 10
-    training_batch_size = 6
-    evaluation_batch_size = 6
+    training_batch_size = 4
+    evaluation_batch_size = 4
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
@@ -78,8 +85,24 @@ class TrainingConfigs:
 
 def main():
     set_all_seeds(TrainingConfigs.random_seed)
-    train_dataset = VideoDataset(train_ucf_task1)
-    valid_dataset = VideoDataset(valid_ucf_task1)
+    train_dataset = VideoDataset(train_ucf_task1, 
+                                 img_size = DatasetConfig.img_size, 
+                                 mean = DatasetConfig.mean, 
+                                 std = DatasetConfig.std,
+                                 num_frames = DatasetConfig.num_frames,
+                                 root_path = DatasetConfig.root_path,
+                                 id2label = DatasetConfig.id2label,
+                                 label2id = DatasetConfig.label2id,
+                                 )
+    valid_dataset = VideoDataset(valid_ucf_task1,
+                                 img_size = DatasetConfig.img_size, 
+                                 mean = DatasetConfig.mean, 
+                                 std = DatasetConfig.std,
+                                 num_frames = DatasetConfig.num_frames,
+                                 root_path = DatasetConfig.root_path,
+                                 id2label = DatasetConfig.id2label,
+                                 label2id = DatasetConfig.label2id,
+                                 )
     
     train_dataloader = DataLoader(train_dataset, 
                                 batch_size=TrainingConfigs.training_batch_size, 
@@ -96,6 +119,7 @@ def main():
                                 num_workers=TrainingConfigs.dataloader_num_workers,
                                 )
     
+    logging.info(f"\n\nTraining starting on: {datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}\n\n")
     # For task n, load the model with the config from model(n-1) 
     # you must have n adapters per blocks
     # distil, ls, and lt losses calculations are set to True
@@ -104,11 +128,14 @@ def main():
     
     # add new task components with new classifier of num_labels size
     model.add_new_task_components(num_new_classes=DatasetConfig.num_labels)
+    model.freeze_all_but_last()
     
     att = model.model_attributes
     print("-"*50)
     for value in att:
         print(f"{value} : {att[value]}")
+    print(f"Calculate distill loss: {model.calculate_distil_loss}")
+    print(f"Calculate lt ls loss: {model.calculate_lt_ls_loss}")
     print("-"*50)
     
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)

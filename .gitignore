@@ -4,3 +4,4 @@ venv
 DATA/
 **/*.txt
 Outputs/*
+**/*.log

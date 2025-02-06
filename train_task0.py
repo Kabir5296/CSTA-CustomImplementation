@@ -1,6 +1,6 @@
 from src.model import CSTA
 from accelerate import Accelerator
-import torch, os, random, accelerate
+import torch, os, random, accelerate, logging, datetime
 from tqdm import tqdm
 import torch.nn as nn
 import numpy as np
@@ -12,6 +12,13 @@ from torchvision.io import read_video
 import torch.optim as optim
 from warnings import filterwarnings
 import torchvision.transforms as transforms
+
+logging.basicConfig(
+    filename="logs/train.log",
+    filemode="a",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 ucf_dataset_training_path = "DATA/UCF101/task_0/train.csv"
 ucf_dataset_test_path = "DATA/UCF101/task_0/test.csv"
@@ -157,6 +164,7 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     progress_bar.update(1)
     progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
     progress_bar.close()
+    logging.info(f"Training loss for epoch {epoch}: {avg_loss}")
     return avg_loss
 
 def evaluate(model, eval_dataloader, accelerator, epoch):
@@ -184,6 +192,7 @@ def evaluate(model, eval_dataloader, accelerator, epoch):
     progress_bar.update(1)
     progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
     progress_bar.close()
+    logging.info(f"Evaluation loss for epoch {epoch}: {avg_loss}")
     return avg_loss
 
 def main():
@@ -205,16 +214,22 @@ def main():
                                 persistent_workers=TrainingConfigs.dataloader_persistent_workers,
                                 num_workers=TrainingConfigs.dataloader_num_workers,
                                 )
-    
+    logging.info(f"\n\nTraining starting on: {datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}\n\n")
     # For task 0 training, the default configs are fine. Need to check though: 
     # you must have one adapter per blocks
     # distil, ls, and lt losses calculations are set to zero
     model = CSTA(**vars(CSTAConfig))
     att = model.model_attributes
     print("-"*50)
+    logging.info("-"*50)
     for value in att:
         print(f"{value} : {att[value]}")
+        logging.info(f"{value} : {att[value]}")
+    print(f"Calculate distill loss: {model.calculate_distil_loss}")
+    print(f"Calculate lt ls loss: {model.calculate_lt_ls_loss}")
     print("-"*50)
+    logging.info("-"*50)
+    
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     

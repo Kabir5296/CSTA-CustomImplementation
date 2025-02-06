@@ -34,3 +34,26 @@ INFO:root:Training loss for epoch 1: 3.980633516266872
 INFO:root:Evaluation loss for epoch 1: 3.9920430787852115
 INFO:root:Training loss for epoch 2: 3.960613125366784
 INFO:root:Evaluation loss for epoch 2: 3.946595527756382
+INFO:root:
+
+Finetuning starting on: 06/02/2025, 16:00:25
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 128428860
+INFO:root:--------------------------------------------------
+INFO:root:Training loss for epoch 0: 2.8246474609375
+INFO:root:Evaluation loss for epoch 0: 2.5272013346354165
+INFO:root:Training loss for epoch 1: 2.485383544921875
+INFO:root:Evaluation loss for epoch 1: 2.5120101202101934
+INFO:root:Training loss for epoch 2: 2.43564306640625
+INFO:root:Evaluation loss for epoch 2: 2.389104752313523
+INFO:root:Training loss for epoch 3: 2.3984736328125
+INFO:root:Evaluation loss for epoch 3: 2.373562222435361

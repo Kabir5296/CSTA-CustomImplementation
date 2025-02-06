@@ -62,10 +62,10 @@ class TimesFormerBlock(nn.Module):
         self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
-        temporal_attention, _ = self.temporal_msa(x,x,x)
+        temporal_attention = self.temporal_msa(x,x,x)
         x = self.norm(x + temporal_attention)
 
-        spatial_attention, _ = self.spatial_msa(x,x,x)
+        spatial_attention = self.spatial_msa(x,x,x)
         x = self.norm(x + spatial_attention)
 
         x = self.norm(self.mlp(x) + x)

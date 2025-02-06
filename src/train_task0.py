@@ -6,6 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from abc import abstractmethod
 from torchvision.io import read_video
+import torch.optim as optim
 import torchvision.transforms as transforms
 
 ucf_dataset_training_path = "DATA/UCF101/train.csv"
@@ -52,6 +53,11 @@ class TrainingConfigs:
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
+    learning_rate = 0.001
+    adamw_betas = (0.9, 0.999)
+    weight_decay = 0.01
+    eta_min = 1e-6
+    T_max = 50
 
 class VideoDataset(Dataset):
     def __init__(self, 
@@ -113,4 +119,12 @@ train_dataloader = DataLoader(train_dataset,
                               persistent_workers=TrainingConfigs.dataloader_persistent_workers,
                               num_workers=TrainingConfigs.dataloader_num_workers,
                               )
+
+# For task 0 training, the default configs are fine. Need to check though: 
+# you must have one adapter per blocks
+# distil, ls, and lt losses calculations are set to zero
 model = CSTA(**vars(CSTAConfig))
+print(model.model_attributes)
+
+optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
+scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)

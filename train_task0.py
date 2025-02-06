@@ -77,7 +77,7 @@ def set_all_seeds(seed):
 
 class VideoDataset(Dataset):
     def __init__(self, 
-                 df, 
+                 df,
                  img_size = DatasetConfig.img_size, 
                  mean = DatasetConfig.mean, 
                  std = DatasetConfig.std,
@@ -229,7 +229,7 @@ def main():
     best_loss = float('inf')
     for epoch in range(TrainingConfigs.num_training_epochs):
         train_loss = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
-        eval_loss = evaluate(model, eval_dataloader, accelerator)
+        eval_loss = evaluate(model, eval_dataloader, accelerator, epoch)
         
         if eval_loss < best_loss:
             best_loss = eval_loss

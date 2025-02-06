@@ -119,7 +119,7 @@ def main():
                                 num_workers=TrainingConfigs.dataloader_num_workers,
                                 )
     
-    logging.info(f"\n\nTraining starting on: {datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}\n\n")
+    logging.info(f"\n\nFinetuning starting on: {datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')}\n\n")
     # For task n, load the model with the config from model(n-1) 
     # you must have n adapters per blocks
     # distil, ls, and lt losses calculations are set to True
@@ -132,11 +132,14 @@ def main():
     
     att = model.model_attributes
     print("-"*50)
+    logging.info("-"*50)
     for value in att:
         print(f"{value} : {att[value]}")
+        logging.info(f"{value} : {att[value]}")
     print(f"Calculate distill loss: {model.calculate_distil_loss}")
     print(f"Calculate lt ls loss: {model.calculate_lt_ls_loss}")
     print("-"*50)
+    logging.info("-"*50)
     
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)

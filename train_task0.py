@@ -20,9 +20,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-ucf_dataset_training_path = "DATA/UCF101/task_0/train.csv"
-ucf_dataset_test_path = "DATA/UCF101/task_0/test.csv"
-ucf_dataset_valid_path = "DATA/UCF101/task_0/val.csv"
+ucf_dataset_training_path = "DATA/UCF101/tasks/task_0/train.csv"
+ucf_dataset_test_path = "DATA/UCF101/tasks/task_0/test.csv"
+ucf_dataset_valid_path = "DATA/UCF101/tasks/task_0/val.csv"
 
 ucf_train = pd.read_csv(ucf_dataset_training_path)
 ucf_valid = pd.read_csv(ucf_dataset_valid_path)
@@ -38,7 +38,7 @@ class CSTAConfig:
     num_frames = 8                 # taking a lower frame numbers for initial training
     img_size = 256                 # the frames are sized at 256*256
     patch_size = 16                # patch size
-    dim = 768                      # model dimension
+    dim = 512                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
     num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
@@ -61,9 +61,9 @@ class DatasetConfig:
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 10
-    training_batch_size = 6
-    evaluation_batch_size = 6
+    num_training_epochs = 4
+    training_batch_size = 4
+    evaluation_batch_size = 5
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
@@ -137,6 +137,7 @@ class VideoDataset(Dataset):
 def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     model.train()
     total_loss = 0
+    total_acc = 0
     
     progress_bar = tqdm(
         total=len(train_dataloader),
@@ -151,25 +152,32 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
         with accelerator.accumulate(model):
             outputs = model(input_frames, labels)
             loss = outputs.loss
+            accuracy = outputs.accuracy
             
             accelerator.backward(loss)
             optimizer.step()
             optimizer.zero_grad()
             
         total_loss += loss.detach().float()
+        total_acc += accuracy.detach().float()
         progress_bar.update(1)
-        progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+        progress_bar.set_postfix({"loss": f"{loss.item():.4f}, accuracy: {accuracy.item():.4f}"})
         
     avg_loss = total_loss.item() / len(train_dataloader)
+    acg_acc = total_acc.item() / len(train_dataloader)
+    
     progress_bar.update(1)
-    progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+    progress_bar.set_postfix({"loss": f"{avg_loss:.4f}, accuracy: {acg_acc:.4f}"})
+
     progress_bar.close()
-    logging.info(f"Training loss for epoch {epoch}: {avg_loss}")
+
+    logging.info(f"Training loss for epoch {epoch}: {avg_loss}, accuracy: {acg_acc:.4f}")
     return avg_loss
 
 def evaluate(model, eval_dataloader, accelerator, epoch):
     model.eval()
     total_loss = 0
+    total_acc = 0
     
     progress_bar = tqdm(
         total=len(eval_dataloader),
@@ -183,16 +191,21 @@ def evaluate(model, eval_dataloader, accelerator, epoch):
             labels = batch["label"]
             outputs = model(input_frames, labels)
             loss = outputs.loss
+            accuracy = outputs.accuracy
             
         total_loss += loss.detach().float()
+        total_acc += accuracy.detach().float()
         progress_bar.update(1)
-        progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+        progress_bar.set_postfix({"loss": f"{loss.item():.4f}, accuracy: {accuracy.item():.4f}"})
     
     avg_loss = total_loss.item() / len(eval_dataloader)
+    acg_acc = total_acc.item() / len(eval_dataloader)
+    
     progress_bar.update(1)
-    progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+    progress_bar.set_postfix({"loss": f"{avg_loss:.4f}, accuracy: {acg_acc:.4f}"})
+
     progress_bar.close()
-    logging.info(f"Evaluation loss for epoch {epoch}: {avg_loss}")
+    logging.info(f"Evaluation loss for epoch {epoch}: {avg_loss}, accuracy: {acg_acc:.4f}")
     return avg_loss
 
 def main():

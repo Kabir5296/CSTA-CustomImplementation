@@ -15,6 +15,7 @@ class CSTAOutput:
     ls_loss: Optional[torch.FloatTensor] = None
     last_hidden_state: Optional[torch.FloatTensor] = None
     loss: Optional[torch.FloatTensor] = None
+    accuracy: Optional[torch.FloatTensor] = None
 
 class CSTA(nn.Module):
     def __init__(self,
@@ -172,7 +173,7 @@ class CSTA(nn.Module):
         x = torch.cat((cls_tokens, x), dim=2)               # shape: B, T, num_patches+1, dim
         x = x + self.spatial_pos_embed + self.temporal_pos_embed
 
-        loss = ce_loss = distil_loss = lt_loss = ls_loss = None
+        loss = ce_loss = distil_loss = lt_loss = ls_loss = accuracy = None
         x_old = x
 
         for block_idx, block in enumerate(self.blocks):
@@ -222,9 +223,9 @@ class CSTA(nn.Module):
 
         final_logits = torch.cat(outputs, dim=1)
         predictions = torch.softmax(final_logits, dim=-1)
-
         total_loss = []
         if targets is not None:
+            accuracy = (predictions.argmax(-1) == targets).float().mean()
             ce_loss = F.cross_entropy(final_logits, targets)
             total_loss.append(ce_loss)
             if self.calculate_distil_loss and targets is not None:
@@ -241,4 +242,5 @@ class CSTA(nn.Module):
             ls_loss = ls_loss,
             predictions = predictions,
             last_hidden_state = x,
+            accuracy = accuracy,
         )

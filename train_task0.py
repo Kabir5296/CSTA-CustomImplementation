@@ -38,7 +38,7 @@ class CSTAConfig:
     num_frames = 8                 # taking a lower frame numbers for initial training
     img_size = 224                 # the frames are sized at 256*256
     patch_size = 16                # patch size
-    dim = 512                      # model dimension
+    dim = 768                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
     num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB

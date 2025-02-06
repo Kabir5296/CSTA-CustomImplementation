@@ -42,13 +42,13 @@ class oldCSTAConfig:
     In this case the initial model had 50 num_classes
     """
     num_frames = 8                 # taking a lower frame numbers for initial training
-    img_size = 256                 # the frames are sized at 256*256
+    img_size = 224                 # the frames are sized at 256*256
     patch_size = 16                # patch size
     dim = 768                      # model dimension
     num_classes = 50               # lets say we have a data for initial training with these classes
     num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
-    num_heads = 8                  # using 8 heads in attention
+    num_heads = 12                 # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed

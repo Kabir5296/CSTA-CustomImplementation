@@ -1,8 +1,9 @@
 from src.model import CSTA
 from accelerate import Accelerator
-import torch, os, accelerate
+import torch, os, random, accelerate
 from tqdm import tqdm
 import torch.nn as nn
+import numpy as np
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
@@ -52,6 +53,7 @@ class DatasetConfig:
     label2id = label2id
     
 class TrainingConfigs:
+    random_seed = 42
     num_training_epochs = 10
     training_batch_size = 6
     evaluation_batch_size = 6
@@ -64,6 +66,14 @@ class TrainingConfigs:
     eta_min = 1e-6
     T_max = 10
     model_output_dir = "Outputs/Models/Trial1"
+
+def set_all_seeds(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # For multi-GPU if available
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 class VideoDataset(Dataset):
     def __init__(self, 
@@ -127,7 +137,7 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
         desc=f"Training epoch {epoch}"
     )
     
-    for step, batch in enumerate(train_dataloader):
+    for batch in train_dataloader:
         input_frames = batch["input_frames"]
         labels = batch["label"]
         
@@ -140,24 +150,26 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
             optimizer.zero_grad()
             
         total_loss += loss.detach().float()
-        
         progress_bar.update(1)
         progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
-    
+        
+    avg_loss = total_loss.item() / len(train_dataloader)
+    progress_bar.update(1)
+    progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
     progress_bar.close()
-    return total_loss.item() / len(train_dataloader)
+    return avg_loss
 
-def evaluate(model, eval_dataloader, accelerator):
+def evaluate(model, eval_dataloader, accelerator, epoch):
     model.eval()
     total_loss = 0
     
     progress_bar = tqdm(
         total=len(eval_dataloader),
         disable=not accelerator.is_local_main_process,
-        desc = "Evaluation"
+        desc = f"Evaluation epoch: {epoch}"
     )
     
-    for step, batch in enumerate(eval_dataloader):
+    for batch in eval_dataloader:
         with torch.no_grad():
             input_frames = batch["input_frames"]
             labels = batch["label"]
@@ -168,9 +180,14 @@ def evaluate(model, eval_dataloader, accelerator):
         progress_bar.update(1)
         progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
     
-    return total_loss.item() / len(eval_dataloader)
+    avg_loss = total_loss.item() / len(eval_dataloader)
+    progress_bar.update(1)
+    progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
+    progress_bar.close()
+    return avg_loss
 
 def main():
+    set_all_seeds(TrainingConfigs.random_seed)
     train_dataset = VideoDataset(ucf_train)
     valid_dataset = VideoDataset(ucf_valid)
 
@@ -194,9 +211,10 @@ def main():
     # distil, ls, and lt losses calculations are set to zero
     model = CSTA(**vars(CSTAConfig))
     att = model.model_attributes
+    print("-"*50)
     for value in att:
         print(f"{value} : {att[value]}")
-
+    print("-"*50)
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     

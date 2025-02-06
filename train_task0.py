@@ -1,6 +1,7 @@
-from src import CSTA
+from src.model import CSTA
 from accelerate import Accelerator
-import torch, os, tqdm, accelerate
+import torch, os, accelerate
+from tqdm import tqdm
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
@@ -8,11 +9,12 @@ import pandas as pd
 from abc import abstractmethod
 from torchvision.io import read_video
 import torch.optim as optim
+from warnings import filterwarnings
 import torchvision.transforms as transforms
 
-ucf_dataset_training_path = "DATA/UCF101/train.csv"
-ucf_dataset_test_path = "DATA/UCF101/test.csv"
-ucf_dataset_valid_path = "DATA/UCF101/val.csv"
+ucf_dataset_training_path = "DATA/UCF101/task_0/train.csv"
+ucf_dataset_test_path = "DATA/UCF101/task_0/test.csv"
+ucf_dataset_valid_path = "DATA/UCF101/task_0/val.csv"
 
 ucf_train = pd.read_csv(ucf_dataset_training_path)
 ucf_valid = pd.read_csv(ucf_dataset_valid_path)
@@ -51,12 +53,12 @@ class DatasetConfig:
     
 class TrainingConfigs:
     num_training_epochs = 10
-    training_batch_size = 10
-    evaluation_batch_size = 10
+    training_batch_size = 6
+    evaluation_batch_size = 6
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 0.001
+    learning_rate = 0.01
     adamw_betas = (0.9, 0.999)
     weight_decay = 0.01
     eta_min = 1e-6
@@ -149,7 +151,13 @@ def evaluate(model, eval_dataloader, accelerator):
     model.eval()
     total_loss = 0
     
-    for batch in tqdm(eval_dataloader, disable=not accelerator.is_local_main_process, desc="Evaluating"):
+    progress_bar = tqdm(
+        total=len(eval_dataloader),
+        disable=not accelerator.is_local_main_process,
+        desc = "Evaluation"
+    )
+    
+    for step, batch in enumerate(eval_dataloader):
         with torch.no_grad():
             input_frames = batch["input_frames"]
             labels = batch["label"]
@@ -157,6 +165,8 @@ def evaluate(model, eval_dataloader, accelerator):
             loss = outputs.loss
             
         total_loss += loss.detach().float()
+        progress_bar.update(1)
+        progress_bar.set_postfix({"loss": f"{loss.item():.4f}"})
     
     return total_loss.item() / len(eval_dataloader)
 
@@ -207,17 +217,10 @@ def main():
             best_loss = eval_loss
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
-            accelerator.save(
-                {
-                    "model": unwrapped_model.state_dict(),
-                    "optimizer": optimizer.state_dict(),
-                    "scheduler": scheduler.state_dict(),
-                    "epoch": epoch,
-                },
-                os.path.join(TrainingConfigs.model_output_dir, "best_model.pth")
-            )
+            torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
         scheduler.step()
     accelerator.end_training()
     
 if __name__ == "__main__":
+    filterwarnings("ignore")
     main()

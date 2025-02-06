@@ -3,3 +3,4 @@ venv
 **/*.ipynb
 DATA/
 **/*.txt
+Outputs/*

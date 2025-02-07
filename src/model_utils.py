@@ -23,23 +23,24 @@ class TemporalMultiheadAttention(nn.Module):
     
     def temporal_preprocess(self, x, B, T, num_patches):
         # take input x in B*T, num_patches+1, dim format. convert to B*num_patches, T, dim and returns
-        cls_tokens, x_temporal = x[:, :1, :], x[:, 1:, :]
-        x_temporal = x_temporal.reshape([B*num_patches, T, self.dim])        # shape: B*num_patches, T, dim
-        return x_temporal, cls_tokens
+        x = x.reshape(B, T, num_patches+1, self.dim)        # shape: B, T, num_patches+1, dim
+        cls_token, patches = x[:, :, :1, :], x[:, :, 1:, :]
+        patches = patches.permute(0, 2, 1, 3)
+        patches = patches.reshape(-1, T, self.dim) #shape: B*num_patches, T, sim
+        return patches, cls_token
     
     def forward(self, x, B, T, num_patches):
         # x is the patches added with cls token, shape: B*T, num_patches+1, dim
         x, cls_token = self.temporal_preprocess(x,B,T,num_patches)
-        
         res = x
         x = self.layer_norm(x)      # shape: B*num_patches, T, dim
         x, _= self.msa(x,x,x)       # shape: B*num_patches, T, dim
         x = self.proj(x)            # shape: B*num_patches, T, dim
         x = x + res
-        
-        x = x.reshape([B*T, num_patches, self.dim])     # shape: B*T, num_patches, dim
-        x = torch.cat((cls_token, x), dim=1)            # shape: B*T, num_patches+1, dim 
-        return x
+        x = x.reshape([B, num_patches, T, self.dim])    # shape: B, num_patches, T, dim
+        x = x.permute(0,2,1,3)                          # shape: B, T, num_patches, dim
+        x = torch.cat((cls_token, x), dim=2)            # shape: B, T, num_patches+1, dim 
+        return x.reshape(B*T, num_patches +1, self.dim) # shape: B * T, num_patches+1, dim
     
 class SpatialMultiheadAttention(nn.Module):
     def __init__(self, dim, num_heads=8):

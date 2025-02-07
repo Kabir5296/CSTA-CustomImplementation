@@ -12,6 +12,7 @@ from torchvision.io import read_video
 import torch.optim as optim
 from warnings import filterwarnings
 import torchvision.transforms as transforms
+import math
 
 logging.basicConfig(
     filename="logs/train.log",
@@ -44,7 +45,7 @@ class CSTAConfig:
     patch_size = 16                # patch size
     dim = 480                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
-    num_layers= 12                 # total number of timesformer layers or blocks
+    num_layers= 1                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
     num_heads = 8                  # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
@@ -58,16 +59,14 @@ class DatasetConfig:
     img_size = CSTAConfig.img_size
     num_frames = CSTAConfig.num_frames
     root_path = "DATA/UCF101"
-    # mean = [0.485, 0.456, 0.406]
-    # std = [0.229, 0.224, 0.225]
-    mean = [0.5, 0.5, 0.5]
-    std = [0.5, 0.5, 0.5]
+    mean = [0.485, 0.456, 0.406]
+    std = [0.229, 0.224, 0.225]
     id2label = id2label
     label2id = label2id
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 30
+    num_training_epochs = 2
     training_batch_size = 5
     evaluation_batch_size = 5
     dataloader_num_workers = 4
@@ -139,7 +138,37 @@ class VideoDataset(Dataset):
             "input_frames": processed_frames,
             "label": self.label2id[label],
         }
-import pdb
+
+# def init_weights(m):
+    # if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
+        # nn.init.xavier_uniform_(m.weight)  # Or use nn.init.kaiming_uniform_ for ReLU
+        # if m.bias is not None:
+            # nn.init.zeros_(m.bias)
+def init_weights(m):
+    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
+        # He initialization using normal distribution
+        nn.init.kaiming_normal_(m.weight, a=math.sqrt(5))  # 'a' is the negative slope for LeakyReLU, default is sqrt(5)
+        if m.bias is not None:
+            nn.init.zeros_(m.bias)
+            
+def check_specific_gradients(model):
+    components = {
+        'patch_embed': model.patch_embed,
+        'temporal_msa': model.blocks[0].temporal_msa,
+        'spatial_msa': model.blocks[0].spatial_msa,
+        'temporal_adapters': model.temporal_adapters[0],
+        'spatial_adapters': model.spatial_adapters[0],
+        'classifier': model.classifiers[-1]
+    }
+    with open("logs/gradients.txt", "+a") as f:
+        f.write("New Batch\n\n")
+        for name, component in components.items():
+            grad_norm = 0
+            for p in component.parameters():
+                if p.grad is not None:
+                    grad_norm += p.grad.norm().item()
+            f.write(f"{name} gradient norm: {grad_norm:.6f}\n")
+
 def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     model.train()
     running_loss = 0.0
@@ -151,7 +180,6 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
         disable=not accelerator.is_local_main_process,
         desc=f"Training epoch {epoch}"
     )
-    
     for batch_idx, batch in enumerate(train_dataloader):
         input_frames = batch["input_frames"]
         labels = batch["label"]
@@ -166,6 +194,7 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
             accuracy = correct / batch_size
             # pdb.set_trace()
             accelerator.backward(loss)
+            check_specific_gradients(model)
             if accelerator.sync_gradients:
                 accelerator.clip_grad_norm_(model.parameters(), 1.0)  # Add gradient clipping
             optimizer.step()
@@ -281,6 +310,7 @@ def main():
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     
+    model.apply(init_weights)
     accelerator = Accelerator()
     model, optimizer, train_dataloader, eval_dataloader, scheduler = accelerator.prepare(
             model, optimizer, train_dataloader, valid_dataloader, scheduler

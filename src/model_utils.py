@@ -35,7 +35,7 @@ class TemporalMultiheadAttention(nn.Module):
         x = self.layer_norm(x)      # shape: B*num_patches, T, dim
         x, _= self.msa(x,x,x)       # shape: B*num_patches, T, dim
         x = self.proj(x)            # shape: B*num_patches, T, dim
-        x = x + res        
+        x = x + res
         
         x = x.reshape([B*T, num_patches, self.dim])     # shape: B*T, num_patches, dim
         x = torch.cat((cls_token, x), dim=1)            # shape: B*T, num_patches+1, dim 

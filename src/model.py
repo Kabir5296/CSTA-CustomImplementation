@@ -1,4 +1,4 @@
-import torch
+import torch, pdb
 import torch.nn as nn
 import torch.nn.functional as F
 from .model_utils import Adapter, TimesFormerBlock
@@ -165,6 +165,7 @@ class CSTA(nn.Module):
         elif H != self.img_size:
             raise ValueError('Input tensor has incorrect height and width')
 
+        patch_scale = 0.1
         x = x.reshape(B * T, C, H, W)                       # reshape to (B * T, C, H, W) for patch embedding
         x = self.patch_embed(x)                             # shape: B*T, dim, H//patch_size, W//patch_size
         x = x.flatten(2).transpose(1, 2)                    # shape: B*T, num_patches, dim : num_patches = (H/patch_size)*(W/patch_size)
@@ -180,6 +181,7 @@ class CSTA(nn.Module):
         loss = ce_loss = distil_loss = lt_loss = ls_loss = accuracy = None
         x_old = x       # B*T, num_patches + 1(cls), dim
 
+        adapter_scale = 0.1
         for block_idx, block in enumerate(self.blocks):
             # x goes to t_msa.
             # t_msa output goes to all adapters (stored in temporal adapter features list)
@@ -187,18 +189,21 @@ class CSTA(nn.Module):
             block_t_msa = block.temporal_msa(x, B, T, self.num_patches)
             temporal_adapter_features = []
             for temporal_adapters in self.temporal_adapters[block_idx]:
-                temporal_adapter_features.append(temporal_adapters(block_t_msa))
+                temporal_adapter_features.append(adapter_scale*temporal_adapters(block_t_msa))
             x = self.norm(x + block_t_msa + sum(temporal_adapter_features))
 
             # same as before but for spatial msa and adapters
             block_s_msa = block.spatial_msa(x)
             spatial_adapter_features = []
             for spatial_adapters in self.spatial_adapters[block_idx]:
-                spatial_adapter_features.append(spatial_adapters(block_s_msa))
+                spatial_adapter_features.append(adapter_scale*spatial_adapters(block_s_msa))
             x = self.norm(x + block_s_msa + sum(spatial_adapter_features))
 
             # final MLP
-            x = self.norm(block.mlp(x) + x)
+            res = x
+            x = self.norm(x)
+            x = res + block.mlp(x)
+            x = self.norm(x)
 
             if self.calculate_distil_loss and targets is not None:
                 block_t_msa_old = block.temporal_msa(x_old, B, T, self.num_patches)

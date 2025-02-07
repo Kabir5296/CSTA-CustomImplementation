@@ -733,3 +733,648 @@ INFO:root:total_classifiers : 1
 INFO:root:total_adapters : 24
 INFO:root:total_params : 53137925
 INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 19:56:39
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 19:59:07
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:00:10
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:02:49
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:03:26
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:07:20
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:12:07
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:48:26
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:53:27
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:55:13
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 20:59:37
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:00:03
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:16:48
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:17:04
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:19:18
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:19:27
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:20:13
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:21:11
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 4
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 4
+INFO:root:total_spatial_adapters : 4
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 8
+INFO:root:total_params : 18026885
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:21:39
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:21:45
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:22:03
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:23:33
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:24:38
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:25:18
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:27:59
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:30:25
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:34:16
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:35:15
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:37:57
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:39:12
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:39:31
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:40:45
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:41:07
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4629365
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:42:05
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:43:39
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:44:04
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:45:04
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:46:27
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:49:11
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:51:58
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:54:46
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:56:13
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 21:57:02
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 1
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 1
+INFO:root:total_spatial_adapters : 1
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 2
+INFO:root:total_params : 4860245
+INFO:root:--------------------------------------------------

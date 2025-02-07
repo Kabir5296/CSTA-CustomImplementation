@@ -20,9 +20,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-ucf_dataset_training_path = "DATA/UCF101/tasks/task_0/train.csv"
-ucf_dataset_test_path = "DATA/UCF101/tasks/task_0/test.csv"
-ucf_dataset_valid_path = "DATA/UCF101/tasks/task_0/val.csv"
+# ucf_dataset_training_path = "DATA/UCF101/tasks/task_1/train.csv"
+# ucf_dataset_test_path = "DATA/UCF101/tasks/task_1/test.csv"
+# ucf_dataset_valid_path = "DATA/UCF101/tasks/task_1/val.csv"
+
+ucf_dataset_training_path = "DATA/UCF101/tasks/task_beta_0/train.csv"
+ucf_dataset_test_path = "DATA/UCF101/tasks/task_beta_0/test.csv"
+ucf_dataset_valid_path = "DATA/UCF101/tasks/task_beta_0/val.csv"
 
 ucf_train = pd.read_csv(ucf_dataset_training_path)
 ucf_valid = pd.read_csv(ucf_dataset_valid_path)
@@ -38,11 +42,11 @@ class CSTAConfig:
     num_frames = 8                 # taking a lower frame numbers for initial training
     img_size = 224                 # the frames are sized at 256*256
     patch_size = 16                # patch size
-    dim = 768                      # model dimension
+    dim = 480                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
     num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
-    num_heads = 12                 # using 8 heads in attention
+    num_heads = 8                  # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
@@ -54,24 +58,26 @@ class DatasetConfig:
     img_size = CSTAConfig.img_size
     num_frames = CSTAConfig.num_frames
     root_path = "DATA/UCF101"
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
+    # mean = [0.485, 0.456, 0.406]
+    # std = [0.229, 0.224, 0.225]
+    mean = [0.5, 0.5, 0.5]
+    std = [0.5, 0.5, 0.5]
     id2label = id2label
     label2id = label2id
     
 class TrainingConfigs:
     random_seed = 42
     num_training_epochs = 30
-    training_batch_size = 4
-    evaluation_batch_size = 4
+    training_batch_size = 5
+    evaluation_batch_size = 5
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 0.01
+    learning_rate = 1e-3
     adamw_betas = (0.9, 0.999)
     weight_decay = 0.01
     eta_min = 1e-6
-    T_max = 10
+    T_max = num_training_epochs
     model_output_dir = "Outputs/Models/Trial1"
 
 def set_all_seeds(seed):
@@ -118,7 +124,7 @@ class VideoDataset(Dataset):
     @staticmethod
     def load_video(path):
         video, _, _ = read_video(filename=path, output_format="TCHW")
-        return video
+        return video.float()
     
     def __getitem__(self, index):
         video_path = os.path.join(self.root_path, self.df['clip_path'][index][1:])
@@ -133,11 +139,12 @@ class VideoDataset(Dataset):
             "input_frames": processed_frames,
             "label": self.label2id[label],
         }
-
+import pdb
 def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     model.train()
-    total_loss = 0
-    total_acc = 0
+    running_loss = 0.0
+    running_acc = 0.0
+    total_samples = 0
     
     progress_bar = tqdm(
         total=len(train_dataloader),
@@ -145,68 +152,95 @@ def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
         desc=f"Training epoch {epoch}"
     )
     
-    for batch in train_dataloader:
+    for batch_idx, batch in enumerate(train_dataloader):
         input_frames = batch["input_frames"]
         labels = batch["label"]
+        batch_size = labels.size(0)
         
         with accelerator.accumulate(model):
             outputs = model(input_frames, labels)
             loss = outputs.loss
-            accuracy = outputs.accuracy
             
+            predictions = outputs.predictions.argmax(-1)
+            correct = (predictions == labels).sum().item()
+            accuracy = correct / batch_size
+            # pdb.set_trace()
             accelerator.backward(loss)
+            if accelerator.sync_gradients:
+                accelerator.clip_grad_norm_(model.parameters(), 1.0)  # Add gradient clipping
             optimizer.step()
             optimizer.zero_grad()
-            
-        total_loss += loss.detach().float()
-        total_acc += accuracy.detach().float()
-        progress_bar.update(1)
-        progress_bar.set_postfix({"loss": f"{loss.item():.4f}, accuracy: {accuracy.item():.4f}"})
         
-    avg_loss = total_loss.item() / len(train_dataloader)
-    acg_acc = total_acc.item() / len(train_dataloader)
+        running_loss += loss.item() * batch_size
+        running_acc += correct
+        total_samples += batch_size
+        
+        progress_bar.update(1)
+        progress_bar.set_postfix({
+            "loss": f"{loss.item():.4f}",
+            "batch_acc": f"{accuracy:.4f}",
+            "running_acc": f"{running_acc/total_samples:.4f}"
+        })
     
-    progress_bar.update(1)
-    progress_bar.set_postfix({"loss": f"{avg_loss:.4f}, accuracy: {acg_acc:.4f}"})
-
+    avg_loss = running_loss / total_samples
+    avg_acc = running_acc / total_samples
     progress_bar.close()
-
-    logging.info(f"Training loss for epoch {epoch}: {avg_loss}, accuracy: {acg_acc:.4f}")
-    return avg_loss
+    logging.info(
+        f"Epoch {epoch} - "
+        f"Average Loss: {avg_loss:.4f}, "
+        f"Average Accuracy: {avg_acc:.4f}, "
+        f"Samples: {total_samples}"
+    )
+    
+    return avg_loss, avg_acc
 
 def evaluate(model, eval_dataloader, accelerator, epoch):
     model.eval()
-    total_loss = 0
-    total_acc = 0
+    running_loss = 0.0
+    running_acc = 0.0
+    total_samples = 0
     
     progress_bar = tqdm(
         total=len(eval_dataloader),
         disable=not accelerator.is_local_main_process,
-        desc = f"Evaluation epoch: {epoch}"
+        desc=f"Evaluation epoch {epoch}"
     )
     
-    for batch in eval_dataloader:
-        with torch.no_grad():
+    with torch.no_grad():
+        for batch in eval_dataloader:
             input_frames = batch["input_frames"]
             labels = batch["label"]
+            batch_size = labels.size(0)
+
             outputs = model(input_frames, labels)
             loss = outputs.loss
-            accuracy = outputs.accuracy
             
-        total_loss += loss.detach().float()
-        total_acc += accuracy.detach().float()
-        progress_bar.update(1)
-        progress_bar.set_postfix({"loss": f"{loss.item():.4f}, accuracy: {accuracy.item():.4f}"})
+            predictions = outputs.predictions.argmax(-1)
+            correct = (predictions == labels).sum().item()
+            accuracy = correct / batch_size
+            
+            running_loss += loss.item() * batch_size
+            running_acc += correct
+            total_samples += batch_size
+            
+            progress_bar.update(1)
+            progress_bar.set_postfix({
+                "loss": f"{loss.item():.4f}",
+                "batch_acc": f"{accuracy:.4f}",
+                "running_acc": f"{running_acc/total_samples:.4f}"
+            })
     
-    avg_loss = total_loss.item() / len(eval_dataloader)
-    acg_acc = total_acc.item() / len(eval_dataloader)
-    
-    progress_bar.update(1)
-    progress_bar.set_postfix({"loss": f"{avg_loss:.4f}, accuracy: {acg_acc:.4f}"})
-
+    avg_loss = running_loss / total_samples
+    avg_acc = running_acc / total_samples
     progress_bar.close()
-    logging.info(f"Evaluation loss for epoch {epoch}: {avg_loss}, accuracy: {acg_acc:.4f}")
-    return avg_loss
+    logging.info(
+        f"Evaluation Epoch {epoch} - "
+        f"Average Loss: {avg_loss:.4f}, "
+        f"Average Accuracy: {avg_acc:.4f}, "
+        f"Samples: {total_samples}"
+    )
+    
+    return avg_loss, avg_acc
 
 def main():
     set_all_seeds(TrainingConfigs.random_seed)
@@ -240,6 +274,7 @@ def main():
         logging.info(f"{value} : {att[value]}")
     print(f"Calculate distill loss: {model.calculate_distil_loss}")
     print(f"Calculate lt ls loss: {model.calculate_lt_ls_loss}")
+    print(f"Number of classes for this task: {CSTAConfig.num_classes}")
     print("-"*50)
     logging.info("-"*50)
     
@@ -255,15 +290,22 @@ def main():
         os.makedirs(TrainingConfigs.model_output_dir, exist_ok=True)
     
     best_loss = float('inf')
+    best_acc = 0.0
     for epoch in range(TrainingConfigs.num_training_epochs):
-        train_loss = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
-        eval_loss = evaluate(model, eval_dataloader, accelerator, epoch)
+        train_loss, _ = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
+        eval_loss, eval_acc = evaluate(model, eval_dataloader, accelerator, epoch)
         
         if eval_loss < best_loss:
             best_loss = eval_loss
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
+        elif eval_acc > best_acc:
+            best_acc = eval_acc
+            accelerator.wait_for_everyone()
+            unwrapped_model = accelerator.unwrap_model(model)
+            torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
+        
         scheduler.step()
     accelerator.end_training()
     

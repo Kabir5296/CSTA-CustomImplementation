@@ -231,7 +231,9 @@ class CSTA(nn.Module):
         total_loss = []
         if targets is not None:
             accuracy = (predictions.argmax(-1) == targets).float().mean()
-            ce_loss = F.cross_entropy(final_logits, targets)
+            # import pdb
+            # pdb.set_trace()
+            ce_loss = F.cross_entropy(predictions, targets)
             total_loss.append(ce_loss)
             if self.calculate_distil_loss and targets is not None:
                 distil_loss = self.get_distil_loss(torch.cat(outputs_old, dim=1), final_logits)

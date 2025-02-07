@@ -169,7 +169,6 @@ class CSTA(nn.Module):
         x = x.reshape(B * T, C, H, W)                       # reshape to (B * T, C, H, W) for patch embedding
         x = self.patch_embed(x)                             # shape: B*T, dim, H//patch_size, W//patch_size
         x = x.flatten(2).transpose(1, 2)                    # shape: B*T, num_patches, dim : num_patches = (H/patch_size)*(W/patch_size)
-        # x = x.view(B, T, self.num_patches, self.dim)        # shape: B, T, num_patches, dim
 
         cls_tokens = self.cls_token.expand(x.size(0), -1, -1)           # shape: B*T, 1, dim
         x = torch.cat((cls_tokens, x), dim=1)                           # shape: B*T, num_patches+1, dim
@@ -181,7 +180,6 @@ class CSTA(nn.Module):
         loss = ce_loss = distil_loss = lt_loss = ls_loss = accuracy = None
         x_old = x       # B*T, num_patches + 1(cls), dim
 
-        adapter_scale = 0.1
         for block_idx, block in enumerate(self.blocks):
             # x goes to t_msa.
             # t_msa output goes to all adapters (stored in temporal adapter features list)
@@ -189,14 +187,14 @@ class CSTA(nn.Module):
             block_t_msa = block.temporal_msa(x, B, T, self.num_patches)
             temporal_adapter_features = []
             for temporal_adapters in self.temporal_adapters[block_idx]:
-                temporal_adapter_features.append(adapter_scale*temporal_adapters(block_t_msa))
+                temporal_adapter_features.append(temporal_adapters(block_t_msa))
             x = self.norm(x + block_t_msa + sum(temporal_adapter_features))
 
             # same as before but for spatial msa and adapters
             block_s_msa = block.spatial_msa(x)
             spatial_adapter_features = []
             for spatial_adapters in self.spatial_adapters[block_idx]:
-                spatial_adapter_features.append(adapter_scale*spatial_adapters(block_s_msa))
+                spatial_adapter_features.append(spatial_adapters(block_s_msa))
             x = self.norm(x + block_s_msa + sum(spatial_adapter_features))
 
             # final MLP
@@ -218,7 +216,10 @@ class CSTA(nn.Module):
                     spatial_adapter_features_old.append(spatial_adapters(block_s_msa_old))
                 x_old = self.norm(x_old + block_s_msa_old + sum(spatial_adapter_features_old))
 
-                x_old = self.norm(block.mlp(x_old) + x_old)
+                res = x_old
+                x_old = self.norm(x_old)
+                x_old = res + block.mlp(x_old)
+                x_old = self.norm(x_old)
 
         x = x[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1) 
         x_old = x_old[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1)

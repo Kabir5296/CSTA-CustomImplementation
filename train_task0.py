@@ -45,7 +45,7 @@ class CSTAConfig:
     patch_size = 16                # patch size
     dim = 480                      # model dimension
     num_classes = len(all_labels)  # lets say we have a data for initial training with these classes
-    num_layers= 1                 # total number of timesformer layers or blocks
+    num_layers= 12                 # total number of timesformer layers or blocks
     num_channels = 3               # RGB
     num_heads = 8                  # using 8 heads in attention
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
@@ -66,15 +66,15 @@ class DatasetConfig:
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 2
+    num_training_epochs = 20
     training_batch_size = 5
     evaluation_batch_size = 5
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 1e-3
+    learning_rate = 1e-2
     adamw_betas = (0.9, 0.999)
-    weight_decay = 0.01
+    weight_decay = 1e-5
     eta_min = 1e-6
     T_max = num_training_epochs
     model_output_dir = "Outputs/Models/Trial1"
@@ -139,11 +139,6 @@ class VideoDataset(Dataset):
             "label": self.label2id[label],
         }
 
-# def init_weights(m):
-    # if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
-        # nn.init.xavier_uniform_(m.weight)  # Or use nn.init.kaiming_uniform_ for ReLU
-        # if m.bias is not None:
-            # nn.init.zeros_(m.bias)
 def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
         # He initialization using normal distribution
@@ -307,6 +302,7 @@ def main():
     print("-"*50)
     logging.info("-"*50)
     
+    # optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
     optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     

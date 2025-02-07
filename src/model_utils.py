@@ -18,7 +18,7 @@ class TemporalMultiheadAttention(nn.Module):
         super().__init__()
         self.dim = dim
         self.layer_norm = nn.LayerNorm(dim)
-        self.msa = nn.MultiheadAttention(dim, num_heads)
+        self.msa = nn.MultiheadAttention(dim, num_heads, batch_first=True)
         self.proj = nn.Linear(dim,dim)
     
     def temporal_preprocess(self, x, B, T, num_patches):
@@ -46,7 +46,7 @@ class SpatialMultiheadAttention(nn.Module):
     def __init__(self, dim, num_heads=8):
         super().__init__()
         self.layer_norm = nn.LayerNorm(dim)
-        self.msa = nn.MultiheadAttention(dim, num_heads)
+        self.msa = nn.MultiheadAttention(dim, num_heads, batch_first=True)
         self.proj = nn.Linear(dim,dim)
     
     def forward(self, x):

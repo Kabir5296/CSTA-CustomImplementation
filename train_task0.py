@@ -66,13 +66,13 @@ class DatasetConfig:
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 20
+    num_training_epochs = 60
     training_batch_size = 5
     evaluation_batch_size = 5
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 1e-2
+    learning_rate = 5e-3
     adamw_betas = (0.9, 0.999)
     weight_decay = 1e-5
     eta_min = 1e-6
@@ -302,8 +302,8 @@ def main():
     print("-"*50)
     logging.info("-"*50)
     
-    # optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
-    optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
+    optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
+    # optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     
     model.apply(init_weights)

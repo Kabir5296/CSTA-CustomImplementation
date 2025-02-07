@@ -64,3 +64,122 @@ INFO:root:total_classifiers : 1
 INFO:root:total_adapters : 24
 INFO:root:total_params : 53137925
 INFO:root:--------------------------------------------------
+INFO:root:
+
+Training starting on: 07/02/2025, 23:20:55
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 1.5918, Average Accuracy: 0.2698, Samples: 693
+INFO:root:Evaluation Epoch 0 - Average Loss: 1.5848, Average Accuracy: 0.2870, Samples: 115
+INFO:root:Epoch 1 - Average Loss: 1.5761, Average Accuracy: 0.3131, Samples: 693
+INFO:root:Evaluation Epoch 1 - Average Loss: 1.6158, Average Accuracy: 0.1913, Samples: 115
+INFO:root:Epoch 2 - Average Loss: 1.5580, Average Accuracy: 0.3362, Samples: 693
+INFO:root:Evaluation Epoch 2 - Average Loss: 1.5668, Average Accuracy: 0.3217, Samples: 115
+INFO:root:Epoch 3 - Average Loss: 1.5479, Average Accuracy: 0.3348, Samples: 693
+INFO:root:Evaluation Epoch 3 - Average Loss: 1.5796, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 4 - Average Loss: 1.5370, Average Accuracy: 0.3550, Samples: 693
+INFO:root:Evaluation Epoch 4 - Average Loss: 1.5703, Average Accuracy: 0.3217, Samples: 115
+INFO:root:Epoch 5 - Average Loss: 1.5281, Average Accuracy: 0.3608, Samples: 693
+INFO:root:Evaluation Epoch 5 - Average Loss: 1.5647, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 6 - Average Loss: 1.5236, Average Accuracy: 0.3636, Samples: 693
+INFO:root:Evaluation Epoch 6 - Average Loss: 1.5548, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 7 - Average Loss: 1.5172, Average Accuracy: 0.3579, Samples: 693
+INFO:root:Evaluation Epoch 7 - Average Loss: 1.5542, Average Accuracy: 0.3130, Samples: 115
+INFO:root:Epoch 8 - Average Loss: 1.5126, Average Accuracy: 0.3737, Samples: 693
+INFO:root:Evaluation Epoch 8 - Average Loss: 1.5431, Average Accuracy: 0.3043, Samples: 115
+INFO:root:Epoch 9 - Average Loss: 1.5059, Average Accuracy: 0.3867, Samples: 693
+INFO:root:Evaluation Epoch 9 - Average Loss: 1.5332, Average Accuracy: 0.3826, Samples: 115
+INFO:root:Epoch 10 - Average Loss: 1.4994, Average Accuracy: 0.3911, Samples: 693
+INFO:root:Evaluation Epoch 10 - Average Loss: 1.5283, Average Accuracy: 0.3913, Samples: 115
+INFO:root:Epoch 11 - Average Loss: 1.4940, Average Accuracy: 0.3997, Samples: 693
+INFO:root:Evaluation Epoch 11 - Average Loss: 1.5266, Average Accuracy: 0.3652, Samples: 115
+INFO:root:Epoch 12 - Average Loss: 1.4883, Average Accuracy: 0.4257, Samples: 693
+INFO:root:Evaluation Epoch 12 - Average Loss: 1.5235, Average Accuracy: 0.3391, Samples: 115
+INFO:root:Epoch 13 - Average Loss: 1.4844, Average Accuracy: 0.4286, Samples: 693
+INFO:root:Evaluation Epoch 13 - Average Loss: 1.5194, Average Accuracy: 0.3478, Samples: 115
+INFO:root:Epoch 14 - Average Loss: 1.4794, Average Accuracy: 0.4444, Samples: 693
+INFO:root:Evaluation Epoch 14 - Average Loss: 1.5146, Average Accuracy: 0.4174, Samples: 115
+INFO:root:Epoch 15 - Average Loss: 1.4760, Average Accuracy: 0.4430, Samples: 693
+INFO:root:Evaluation Epoch 15 - Average Loss: 1.5146, Average Accuracy: 0.4174, Samples: 115
+INFO:root:Epoch 16 - Average Loss: 1.4727, Average Accuracy: 0.4603, Samples: 693
+INFO:root:Evaluation Epoch 16 - Average Loss: 1.5148, Average Accuracy: 0.4000, Samples: 115
+INFO:root:Epoch 17 - Average Loss: 1.4716, Average Accuracy: 0.4401, Samples: 693
+INFO:root:Evaluation Epoch 17 - Average Loss: 1.5140, Average Accuracy: 0.3652, Samples: 115
+INFO:root:
+
+Training starting on: 07/02/2025, 23:51:53
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 1.6155, Average Accuracy: 0.1789, Samples: 693
+INFO:root:Evaluation Epoch 0 - Average Loss: 1.6147, Average Accuracy: 0.1826, Samples: 115
+INFO:root:Epoch 1 - Average Loss: 1.6123, Average Accuracy: 0.1789, Samples: 693
+INFO:root:Evaluation Epoch 1 - Average Loss: 1.6118, Average Accuracy: 0.1826, Samples: 115
+INFO:root:Epoch 2 - Average Loss: 1.6093, Average Accuracy: 0.1789, Samples: 693
+INFO:root:Evaluation Epoch 2 - Average Loss: 1.6091, Average Accuracy: 0.1826, Samples: 115
+INFO:root:
+
+Training starting on: 07/02/2025, 23:58:33
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53137925
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 1.5923, Average Accuracy: 0.2698, Samples: 693
+INFO:root:Evaluation Epoch 0 - Average Loss: 1.5850, Average Accuracy: 0.2870, Samples: 115
+INFO:root:Epoch 1 - Average Loss: 1.5794, Average Accuracy: 0.3030, Samples: 693
+INFO:root:Evaluation Epoch 1 - Average Loss: 1.6030, Average Accuracy: 0.2087, Samples: 115
+INFO:root:Epoch 2 - Average Loss: 1.5711, Average Accuracy: 0.3247, Samples: 693
+INFO:root:Evaluation Epoch 2 - Average Loss: 1.5762, Average Accuracy: 0.2870, Samples: 115
+INFO:root:Epoch 3 - Average Loss: 1.5641, Average Accuracy: 0.3319, Samples: 693
+INFO:root:Evaluation Epoch 3 - Average Loss: 1.5810, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 4 - Average Loss: 1.5549, Average Accuracy: 0.3550, Samples: 693
+INFO:root:Evaluation Epoch 4 - Average Loss: 1.5706, Average Accuracy: 0.3304, Samples: 115
+INFO:root:Epoch 5 - Average Loss: 1.5463, Average Accuracy: 0.3593, Samples: 693
+INFO:root:Evaluation Epoch 5 - Average Loss: 1.5823, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 6 - Average Loss: 1.5420, Average Accuracy: 0.3564, Samples: 693
+INFO:root:Evaluation Epoch 6 - Average Loss: 1.5639, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 7 - Average Loss: 1.5362, Average Accuracy: 0.3564, Samples: 693
+INFO:root:Evaluation Epoch 7 - Average Loss: 1.5703, Average Accuracy: 0.3043, Samples: 115
+INFO:root:Epoch 8 - Average Loss: 1.5338, Average Accuracy: 0.3463, Samples: 693
+INFO:root:Evaluation Epoch 8 - Average Loss: 1.5626, Average Accuracy: 0.3130, Samples: 115
+INFO:root:Epoch 9 - Average Loss: 1.5279, Average Accuracy: 0.3622, Samples: 693
+INFO:root:Evaluation Epoch 9 - Average Loss: 1.5521, Average Accuracy: 0.3043, Samples: 115
+INFO:root:Epoch 10 - Average Loss: 1.5232, Average Accuracy: 0.3564, Samples: 693
+INFO:root:Evaluation Epoch 10 - Average Loss: 1.5471, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 11 - Average Loss: 1.5199, Average Accuracy: 0.3651, Samples: 693
+INFO:root:Evaluation Epoch 11 - Average Loss: 1.5489, Average Accuracy: 0.3043, Samples: 115
+INFO:root:Epoch 12 - Average Loss: 1.5171, Average Accuracy: 0.3564, Samples: 693
+INFO:root:Evaluation Epoch 12 - Average Loss: 1.5467, Average Accuracy: 0.3130, Samples: 115
+INFO:root:Epoch 13 - Average Loss: 1.5141, Average Accuracy: 0.3752, Samples: 693
+INFO:root:Evaluation Epoch 13 - Average Loss: 1.5449, Average Accuracy: 0.2957, Samples: 115
+INFO:root:Epoch 14 - Average Loss: 1.5092, Average Accuracy: 0.3795, Samples: 693
+INFO:root:Evaluation Epoch 14 - Average Loss: 1.5361, Average Accuracy: 0.3217, Samples: 115
+INFO:root:Epoch 15 - Average Loss: 1.5056, Average Accuracy: 0.3810, Samples: 693
+INFO:root:Evaluation Epoch 15 - Average Loss: 1.5365, Average Accuracy: 0.3913, Samples: 115

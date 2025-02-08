@@ -48,11 +48,11 @@ for index, label in enumerate(all_labels):
     
 for label in task_0_labels:
     label_df = ucf_train_task0[ucf_train_task0['label'] == label]
-    label_df = label_df.sample(5)
+    label_df = label_df.sample(random_state=42)
     train_ucf_task1 = pd.concat([train_ucf_task1, label_df])
     
     label_df = ucf_valid_task0[ucf_valid_task0['label'] == label]
-    label_df = label_df.sample(5)
+    label_df = label_df.sample(random_state=42)
     valid_ucf_task1 = pd.concat([valid_ucf_task1, label_df])
     
 train_ucf_task1 = train_ucf_task1.reset_index(drop=True)

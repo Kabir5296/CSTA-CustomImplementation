@@ -77,7 +77,8 @@ class TrainingConfigs:
     adamw_betas = (0.9, 0.999)
     weight_decay = 1e-5
     eta_min = 1e-10
-    T_max = num_training_epochs // 4
+    warmup_epochs = 12
+    T_max = num_training_epochs - warmup_epochs
     model_output_dir = "Outputs/Models/Trial_51_run2"
 
 def set_all_seeds(seed):
@@ -334,8 +335,8 @@ def main():
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
-        
-        # scheduler.step()
+        if epoch > TrainingConfigs.warmup_epochs:
+            scheduler.step()
     accelerator.end_training()
     
 if __name__ == "__main__":

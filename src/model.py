@@ -31,9 +31,10 @@ class CSTA(nn.Module):
                  init_with_adapters = True,
                  calculate_distil_loss = False,
                  calculate_lt_ls_loss = False,
-                 miu_d = 1.0,
-                 miu_t = 1.0,
-                 miu_s = 1.0,
+                 miu_d = 0.1,
+                 miu_t = 0.1,
+                 miu_s = 0.1,
+                 lambda_1 = 0.2,
                  **kwargs,
                  ):
         super().__init__()
@@ -70,6 +71,7 @@ class CSTA(nn.Module):
         self.miu_d = miu_d
         self.miu_t = miu_t
         self.miu_s = miu_s
+        self.lambda_1 = lambda_1
         self.num_frames = num_frames
 
         # process video to patches and add positional embeddings, class token
@@ -156,7 +158,18 @@ class CSTA(nn.Module):
 
     def get_distil_loss(self, old_logits, new_logits):
         return F.kl_div(F.log_softmax(new_logits, dim=1), F.softmax(old_logits, dim=1), reduction='batchmean')
+    
+    def run_classifiers(self, x):
+        B = x.shape[0]
+        total_classes = self.classifiers[-1].out_features
         
+        final_tensor = torch.zeros(B, total_classes, device=next(self.parameters()).device)
+        for index, classifier in enumerate(self.classifiers):
+            output_tensor = classifier(x)
+            output_tensor = torch.cat([output_tensor, torch.zeros(B, total_classes - output_tensor.shape[1],device=next(self.parameters()).device)], dim=-1)
+            final_tensor += output_tensor * 1 if index == 0 else output_tensor * self.lambda_1
+        return final_tensor
+
     def forward(self, x, targets=None):
         B, T, C, H, W = x.shape
 
@@ -222,28 +235,21 @@ class CSTA(nn.Module):
                 x_old = self.norm(x_old)
 
         x = x[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1) 
-        x_old = x_old[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1)
-
-        outputs = []
-        outputs_old = []
-
-        for classifier in self.classifiers:
-            outputs.append(classifier(x))
-            if self.calculate_distil_loss and targets is not None:
-                outputs_old.append(classifier(x_old))
-
-        final_logits = torch.cat(outputs, dim=-1)
+        final_logits = self.run_classifiers(x)
         predictions = torch.softmax(final_logits, dim=-1)
+
         total_loss = []
         if targets is not None:
             accuracy = (predictions.argmax(-1) == targets).float().mean()
-            # import pdb
-            # pdb.set_trace()
             ce_loss = F.cross_entropy(predictions, targets)
             total_loss.append(ce_loss)
+            
             if self.calculate_distil_loss and targets is not None:
-                distil_loss = self.get_distil_loss(torch.cat(outputs_old, dim=1), final_logits)
+                x_old = x_old[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1)
+                final_logits_old = self.run_classifiers(x_old)
+                distil_loss = self.get_distil_loss(final_logits_old, final_logits)
                 total_loss.append(self.miu_d * distil_loss) if distil_loss is not None else None
+            
             loss = sum(total_loss)
 
         return CSTAOutput(

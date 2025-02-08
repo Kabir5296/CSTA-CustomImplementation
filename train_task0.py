@@ -21,13 +21,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ucf_dataset_training_path = "DATA/UCF101/tasks/task_1/train.csv"
-# ucf_dataset_test_path = "DATA/UCF101/tasks/task_1/test.csv"
-# ucf_dataset_valid_path = "DATA/UCF101/tasks/task_1/val.csv"
+ucf_dataset_training_path = "DATA/UCF101/tasks/task_0/train.csv"
+ucf_dataset_test_path = "DATA/UCF101/tasks/task_0/test.csv"
+ucf_dataset_valid_path = "DATA/UCF101/tasks/task_0/val.csv"
 
-ucf_dataset_training_path = "DATA/UCF101/tasks/task_beta_0/train.csv"
-ucf_dataset_test_path = "DATA/UCF101/tasks/task_beta_0/test.csv"
-ucf_dataset_valid_path = "DATA/UCF101/tasks/task_beta_0/val.csv"
+# ucf_dataset_training_path = "DATA/UCF101/tasks/task_beta_0/train.csv"
+# ucf_dataset_test_path = "DATA/UCF101/tasks/task_beta_0/test.csv"
+# ucf_dataset_valid_path = "DATA/UCF101/tasks/task_beta_0/val.csv"
 
 ucf_train = pd.read_csv(ucf_dataset_training_path)
 ucf_valid = pd.read_csv(ucf_dataset_valid_path)
@@ -51,9 +51,10 @@ class CSTAConfig:
     init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
-    miu_d = 1.0                    # distillation loss weight
-    miu_t = 1.0                    # lt loss weight (currently not implemented)
-    miu_s = 1.0                    # ls loss weight (currently not implemented)
+    miu_d = 0.1                    # distillation loss weight
+    miu_t = 0.1                    # lt loss weight (currently not implemented)
+    miu_s = 0.1                    # ls loss weight (currently not implemented)
+    lambda_1 = 0.2
 
 class DatasetConfig:
     img_size = CSTAConfig.img_size
@@ -66,22 +67,22 @@ class DatasetConfig:
     
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 60
-    training_batch_size = 5
-    evaluation_batch_size = 5
+    num_training_epochs = 80
+    training_batch_size = 8
+    evaluation_batch_size = 8
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 5e-3
+    learning_rate = 1e-5
     adamw_betas = (0.9, 0.999)
     weight_decay = 1e-5
-    eta_min = 1e-6
-    T_max = num_training_epochs
-    model_output_dir = "Outputs/Models/Trial1"
+    eta_min = 1e-10
+    T_max = num_training_epochs // 4
+    model_output_dir = "Outputs/Models/Trial_51_run2"
 
 def set_all_seeds(seed):
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # For multi-GPU if available
+    torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
@@ -105,7 +106,10 @@ class VideoDataset(Dataset):
         self.root_path = root_path
         self.transform = transforms.Compose([
             transforms.Resize((img_size, img_size)),
-            transforms.Normalize(mean=mean, std=std)
+            transforms.Normalize(mean=mean, std=std),
+            # transforms.RandomGrayscale(0.1),
+            # transforms.RandomRotation((-15,15)),
+            # transforms.RandomErasing(0.1),
             ])
 
     def __len__(self):
@@ -141,8 +145,7 @@ class VideoDataset(Dataset):
 
 def init_weights(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
-        # He initialization using normal distribution
-        nn.init.kaiming_normal_(m.weight, a=math.sqrt(5))  # 'a' is the negative slope for LeakyReLU, default is sqrt(5)
+        nn.init.kaiming_normal_(m.weight, a=math.sqrt(5))
         if m.bias is not None:
             nn.init.zeros_(m.bias)
             
@@ -302,8 +305,8 @@ def main():
     print("-"*50)
     logging.info("-"*50)
     
-    optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
-    # optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
+    # optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
+    optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     
     model.apply(init_weights)
@@ -332,7 +335,7 @@ def main():
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
         
-        scheduler.step()
+        # scheduler.step()
     accelerator.end_training()
     
 if __name__ == "__main__":

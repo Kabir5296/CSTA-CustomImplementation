@@ -254,3 +254,7 @@ INFO:root:total_classifiers : 1
 INFO:root:total_adapters : 24
 INFO:root:total_params : 53160051
 INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 3.9184, Average Accuracy: 0.0428, Samples: 5695
+INFO:root:Evaluation Epoch 0 - Average Loss: 3.9088, Average Accuracy: 0.0496, Samples: 947
+INFO:root:Epoch 1 - Average Loss: 3.8690, Average Accuracy: 0.0978, Samples: 5695
+INFO:root:Evaluation Epoch 1 - Average Loss: 3.8505, Average Accuracy: 0.1246, Samples: 947

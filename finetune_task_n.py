@@ -22,39 +22,65 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-ucf_task1_train = "DATA/UCF101/task_1/train.csv"
-ucf_task1_valid = "DATA/UCF101/task_1/val.csv"
-ucf_task1_test = "DATA/UCF101/task_1/test.csv"
+ucf_dataset_training_path_task0 = "DATA/UCF101/tasks/task_0/train.csv"
+ucf_dataset_test_path_task0 = "DATA/UCF101/tasks/task_0/test.csv"
+ucf_dataset_valid_path_task0 = "DATA/UCF101/tasks/task_0/val.csv"
+
+ucf_task1_train = "DATA/UCF101/tasks/task_1/train.csv"
+ucf_task1_valid = "DATA/UCF101/tasks/task_1/val.csv"
+ucf_task1_test = "DATA/UCF101/tasks/task_1/test.csv"
 
 train_ucf_task1 = pd.read_csv(ucf_task1_train)
 valid_ucf_task1 = pd.read_csv(ucf_task1_valid)
+ucf_train_task0 = pd.read_csv(ucf_dataset_training_path_task0)
+ucf_valid_task0 = pd.read_csv(ucf_dataset_valid_path_task0)
 
-all_labels = sorted(train_ucf_task1['label'].unique().tolist())
+task_0_labels = sorted(ucf_train_task0['label'].unique().tolist())
+task_1_labels = sorted(train_ucf_task1['label'].unique().tolist())
+
+all_labels = task_0_labels + task_1_labels
+
 id2label = {}
 label2id = {}
 for index, label in enumerate(all_labels):
     id2label[index] = label
     label2id[label] = index
+    
+for label in task_0_labels:
+    label_df = ucf_train_task0[ucf_train_task0['label'] == label]
+    label_df = label_df.sample(5)
+    train_ucf_task1 = pd.concat([train_ucf_task1, label_df])
+    
+    label_df = ucf_valid_task0[ucf_valid_task0['label'] == label]
+    label_df = label_df.sample(5)
+    valid_ucf_task1 = pd.concat([valid_ucf_task1, label_df])
+    
+train_ucf_task1 = train_ucf_task1.reset_index(drop=True)
+valid_ucf_task1 = valid_ucf_task1.reset_index(drop=True)
+    
+num_old_task_classes = len(task_0_labels)
+num_new_task_classes = len(task_1_labels)
 
 class oldCSTAConfig:
     """
     Load the initial model with the EXACT SAME CONFIGS as the previous model.
     In this case the initial model had 50 num_classes
     """
-    num_frames = 8                 # taking a lower frame numbers for initial training
-    img_size = 224                 # the frames are sized at 256*256
-    patch_size = 16                # patch size
-    dim = 480                      # model dimension
-    num_classes = 5                # lets say we have a data for initial training with these classes
-    num_layers= 12                 # total number of timesformer layers or blocks
-    num_channels = 3               # RGB
-    num_heads = 8                  # using 8 heads in attention
-    init_with_adapters = True      # for task 0, the model is initialized with one adapter per block
-    calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
-    calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
-    miu_d = 1.0                    # distillation loss weight
-    miu_t = 1.0                    # lt loss weight (currently not implemented)
-    miu_s = 1.0                    # ls loss weight (currently not implemented)
+    num_frames = 8                      # taking a lower frame numbers for initial training
+    img_size = 224                      # the frames are sized at 256*256
+    patch_size = 16                     # patch size
+    dim = 480                           # model dimension
+    num_classes = num_old_task_classes  # lets say we have a data for initial training with these classes
+    num_layers= 12                      # total number of timesformer layers or blocks
+    num_channels = 3                    # RGB
+    num_heads = 8                       # using 8 heads in attention
+    init_with_adapters = True           # for task 0, the model is initialized with one adapter per block
+    calculate_distil_loss = False       # For task 0 training, no distillation loss is needed
+    calculate_lt_lss_loss = False       # For task 0 training, no lt ls loss is needed
+    miu_d = 0.1                         # distillation loss weight
+    miu_t = 0.1                         # lt loss weight (currently not implemented)
+    miu_s = 0.1                         # ls loss weight (currently not implemented)
+    lambda_1 = 0.2                      # new classifiers multiplying factor
 
 state_dict_path = "Outputs/Models/Trial1/best_model.pth"
 
@@ -70,18 +96,18 @@ class DatasetConfig:
 
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 10
-    training_batch_size = 4
-    evaluation_batch_size = 4
+    num_training_epochs = 80
+    training_batch_size = 8
+    evaluation_batch_size = 8
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 0.01
+    learning_rate = 1e-5
     adamw_betas = (0.9, 0.999)
-    weight_decay = 0.01
-    eta_min = 1e-6
-    T_max = 10
-    model_output_dir = "Outputs/Models/Trial1/Task1"
+    weight_decay = 1e-5
+    eta_min = 1e-10
+    T_max = num_training_epochs // 4
+    model_output_dir = "Outputs/Models/Task1/Trial1"
 
 def main():
     set_all_seeds(TrainingConfigs.random_seed)
@@ -127,7 +153,7 @@ def main():
     model.load_state_dict(torch.load(state_dict_path))
     
     # add new task components with new classifier of num_labels size
-    model.add_new_task_components(num_new_classes=DatasetConfig.num_labels)
+    model.add_new_task_components(num_old_task_classes + num_new_task_classes)
     model.freeze_all_but_last()
     
     att = model.model_attributes
@@ -138,11 +164,12 @@ def main():
         logging.info(f"{value} : {att[value]}")
     print(f"Calculate distill loss: {model.calculate_distil_loss}")
     print(f"Calculate lt ls loss: {model.calculate_lt_ls_loss}")
+    print(f"Number of classes for this task: {model.classifiers[-1].out_features}")
     print("-"*50)
     logging.info("-"*50)
     
-    optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
-    # optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
+    # optimizer = optim.SGD(model.parameters(), lr = TrainingConfigs.learning_rate, weight_decay=TrainingConfigs.weight_decay)
+    optimizer = optim.AdamW(model.parameters(), lr = TrainingConfigs.learning_rate, betas = TrainingConfigs.adamw_betas, weight_decay=TrainingConfigs.weight_decay)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer, T_max=TrainingConfigs.T_max, eta_min=TrainingConfigs.eta_min)
     
     accelerator = Accelerator()
@@ -154,16 +181,23 @@ def main():
         os.makedirs(TrainingConfigs.model_output_dir, exist_ok=True)
     
     best_loss = float('inf')
+    best_acc = 0.0
     for epoch in range(TrainingConfigs.num_training_epochs):
-        train_loss = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
-        eval_loss = evaluate(model, eval_dataloader, accelerator, epoch)
+        train_loss, _ = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
+        eval_loss, eval_acc = evaluate(model, eval_dataloader, accelerator, epoch)
         
         if eval_loss < best_loss:
             best_loss = eval_loss
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
-        scheduler.step()
+        elif eval_acc > best_acc:
+            best_acc = eval_acc
+            accelerator.wait_for_everyone()
+            unwrapped_model = accelerator.unwrap_model(model)
+            torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
+        
+        # scheduler.step()
     accelerator.end_training()
     
 if __name__ == "__main__":

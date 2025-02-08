@@ -266,3 +266,32 @@ INFO:root:Epoch 4 - Average Loss: 3.7787, Average Accuracy: 0.1940, Samples: 569
 INFO:root:Evaluation Epoch 4 - Average Loss: 3.7960, Average Accuracy: 0.1700, Samples: 947
 INFO:root:Epoch 5 - Average Loss: 3.7625, Average Accuracy: 0.2097, Samples: 5695
 INFO:root:Evaluation Epoch 5 - Average Loss: 3.7771, Average Accuracy: 0.1911, Samples: 947
+INFO:root:
+
+Training starting on: 08/02/2025, 23:15:25
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 1
+INFO:root:current_task : 0
+INFO:root:total_temporal_adapters : 12
+INFO:root:total_spatial_adapters : 12
+INFO:root:total_classifiers : 1
+INFO:root:total_adapters : 24
+INFO:root:total_params : 53160051
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 3.9184, Average Accuracy: 0.0428, Samples: 5695
+INFO:root:Evaluation Epoch 0 - Average Loss: 3.9088, Average Accuracy: 0.0496, Samples: 947
+INFO:root:Epoch 1 - Average Loss: 3.8690, Average Accuracy: 0.0978, Samples: 5695
+INFO:root:Evaluation Epoch 1 - Average Loss: 3.8505, Average Accuracy: 0.1246, Samples: 947
+INFO:root:Epoch 2 - Average Loss: 3.8334, Average Accuracy: 0.1382, Samples: 5695
+INFO:root:Evaluation Epoch 2 - Average Loss: 3.8263, Average Accuracy: 0.1447, Samples: 947
+INFO:root:Epoch 3 - Average Loss: 3.8044, Average Accuracy: 0.1668, Samples: 5695
+INFO:root:Evaluation Epoch 3 - Average Loss: 3.8010, Average Accuracy: 0.1742, Samples: 947
+INFO:root:Epoch 4 - Average Loss: 3.7787, Average Accuracy: 0.1940, Samples: 5695
+INFO:root:Evaluation Epoch 4 - Average Loss: 3.7960, Average Accuracy: 0.1700, Samples: 947
+INFO:root:Epoch 5 - Average Loss: 3.7625, Average Accuracy: 0.2097, Samples: 5695
+INFO:root:Evaluation Epoch 5 - Average Loss: 3.7771, Average Accuracy: 0.1911, Samples: 947
+INFO:root:Epoch 6 - Average Loss: 3.7469, Average Accuracy: 0.2251, Samples: 5695
+INFO:root:Evaluation Epoch 6 - Average Loss: 3.7567, Average Accuracy: 0.2228, Samples: 947

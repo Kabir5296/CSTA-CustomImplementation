@@ -15,7 +15,6 @@ from warnings import filterwarnings
 import torchvision.transforms as transforms
 import math
 
-logger = logging.getLogger(__name__)
 ucf_dataset_test_path = "DATA/UCF101/tasks/task_0/test.csv"
 
 # ucf_dataset_training_path = "DATA/UCF101/tasks/task_beta_0/train.csv"
@@ -85,3 +84,51 @@ test_dataloader = DataLoader(test_dataset,
                             num_workers=EvalConfigs.dataloader_num_workers,
                             )
 
+def evaluate(model, eval_dataloader, accelerator):
+    model.eval()
+    running_loss = 0.0
+    running_acc = 0.0
+    total_samples = 0
+    
+    progress_bar = tqdm(
+        total=len(eval_dataloader),
+        disable=not accelerator.is_local_main_process,
+        desc=f"Test"
+    )
+    
+    with torch.no_grad():
+        for batch in eval_dataloader:
+            input_frames = batch["input_frames"]
+            labels = batch["label"]
+            batch_size = labels.size(0)
+
+            outputs = model(input_frames, labels)
+            loss = outputs.loss
+            
+            predictions = outputs.predictions.argmax(-1)
+            correct = (predictions == labels).sum().item()
+            accuracy = correct / batch_size
+            
+            running_loss += loss.item() * batch_size
+            running_acc += correct
+            total_samples += batch_size
+            
+            progress_bar.update(1)
+            progress_bar.set_postfix({
+                "loss": f"{loss.item():.4f}",
+                "batch_acc": f"{accuracy:.4f}",
+                "running_acc": f"{running_acc/total_samples:.4f}"
+            })
+    
+    avg_loss = running_loss / total_samples
+    avg_acc = running_acc / total_samples
+    progress_bar.close()
+    with open("logs/test.log", "+a") as test_log:
+        test_log.write(f"Average Loss: {avg_loss:.4f}, "+f" Average Accuracy: {avg_acc:.4f}, "+f" Samples: {total_samples}")
+    
+    return avg_loss, avg_acc
+
+accelerator = Accelerator()
+model, test_dataloader = accelerator.prepare(model, test_dataloader)
+
+evaluate(model, test_dataloader, accelerator)

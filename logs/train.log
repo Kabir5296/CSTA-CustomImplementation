@@ -453,3 +453,22 @@ INFO:root:Epoch 19 - Average Loss: 4.0850, Average Accuracy: 0.0464, Samples: 10
 INFO:root:Evaluation Epoch 19 - Average Loss: 3.9418, Average Accuracy: 0.1991, Samples: 211
 INFO:root:Epoch 20 - Average Loss: 4.0845, Average Accuracy: 0.0464, Samples: 1013
 INFO:root:Evaluation Epoch 20 - Average Loss: 3.9399, Average Accuracy: 0.1991, Samples: 211
+INFO:root:Epoch 21 - Average Loss: 4.0839, Average Accuracy: 0.0464, Samples: 1013
+INFO:root:Evaluation Epoch 21 - Average Loss: 3.9398, Average Accuracy: 0.1991, Samples: 211
+INFO:root:Epoch 22 - Average Loss: 4.0831, Average Accuracy: 0.0464, Samples: 1013
+INFO:root:Evaluation Epoch 22 - Average Loss: 3.9404, Average Accuracy: 0.1991, Samples: 211
+INFO:root:
+
+Finetuning starting on: 09/02/2025, 11:36:51
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55968592
+INFO:root:--------------------------------------------------

@@ -637,3 +637,15 @@ INFO:root:total_params : 53183091
 INFO:root:--------------------------------------------------
 INFO:root:Epoch 0 - Average Loss: 3.9161, Average Accuracy: 0.0451, Samples: 5695
 INFO:root:Evaluation Epoch 0 - Average Loss: 3.8888, Average Accuracy: 0.0718, Samples: 947
+INFO:root:Epoch 1 - Average Loss: 3.8572, Average Accuracy: 0.1124, Samples: 5695
+INFO:root:Evaluation Epoch 1 - Average Loss: 3.8458, Average Accuracy: 0.1235, Samples: 947
+INFO:root:Epoch 2 - Average Loss: 3.8287, Average Accuracy: 0.1428, Samples: 5695
+INFO:root:Evaluation Epoch 2 - Average Loss: 3.8299, Average Accuracy: 0.1373, Samples: 947
+INFO:root:Epoch 3 - Average Loss: 3.8002, Average Accuracy: 0.1740, Samples: 5695
+INFO:root:Evaluation Epoch 3 - Average Loss: 3.8032, Average Accuracy: 0.1690, Samples: 947
+INFO:root:Epoch 4 - Average Loss: 3.7802, Average Accuracy: 0.1914, Samples: 5695
+INFO:root:Evaluation Epoch 4 - Average Loss: 3.7946, Average Accuracy: 0.1774, Samples: 947
+INFO:root:Epoch 5 - Average Loss: 3.7627, Average Accuracy: 0.2100, Samples: 5695
+INFO:root:Evaluation Epoch 5 - Average Loss: 3.7776, Average Accuracy: 0.1964, Samples: 947
+INFO:root:Epoch 6 - Average Loss: 3.7397, Average Accuracy: 0.2374, Samples: 5695
+INFO:root:Evaluation Epoch 6 - Average Loss: 3.7408, Average Accuracy: 0.2323, Samples: 947

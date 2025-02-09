@@ -69,8 +69,8 @@ class DatasetConfig:
 class TrainingConfigs:
     random_seed = 42
     num_training_epochs = 80
-    training_batch_size = 8
-    evaluation_batch_size = 8
+    training_batch_size = 7
+    evaluation_batch_size = 7
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
@@ -80,7 +80,7 @@ class TrainingConfigs:
     eta_min = 1e-10
     warmup_epochs = 12
     T_max = num_training_epochs - warmup_epochs
-    model_output_dir = "Outputs/Models/Trial_51_run2"
+    model_output_dir = "Outputs/Models/Trial_51_run3"
 
 def set_all_seeds(seed):
     torch.manual_seed(seed)

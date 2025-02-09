@@ -82,7 +82,7 @@ class oldCSTAConfig:
     miu_s = 0.1                         # ls loss weight (currently not implemented)
     lambda_1 = 0.2                      # new classifiers multiplying factor
 
-state_dict_path = "Outputs/Models/Trial1/best_model.pth"
+state_dict_path = "Outputs/Models/Trial_51_run2/best_model.pth"
 
 class DatasetConfig:
     img_size = oldCSTAConfig.img_size
@@ -97,8 +97,8 @@ class DatasetConfig:
 class TrainingConfigs:
     random_seed = 42
     num_training_epochs = 80
-    training_batch_size = 8
-    evaluation_batch_size = 8
+    training_batch_size = 6
+    evaluation_batch_size = 6
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False

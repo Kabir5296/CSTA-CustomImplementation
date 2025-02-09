@@ -160,14 +160,10 @@ class CSTA(nn.Module):
         return F.kl_div(F.log_softmax(new_logits, dim=1), F.softmax(old_logits, dim=1), reduction='batchmean')
     
     def run_classifiers(self, x):
-        B = x.shape[0]
-        total_classes = self.classifiers[-1].out_features
-        
-        final_tensor = torch.zeros(B, total_classes, device=next(self.parameters()).device)
-        for index, classifier in enumerate(self.classifiers):
-            output_tensor = classifier(x)
-            output_tensor = torch.cat([output_tensor, torch.zeros(B, total_classes - output_tensor.shape[1],device=next(self.parameters()).device)], dim=-1)
-            final_tensor += output_tensor * 1 if index == 0 else output_tensor * self.lambda_1
+        outputs = []            
+        for classifier in self.classifiers:
+            outputs.append(classifier(x))
+        final_tensor = torch.cat(outputs, dim=-1)
         return final_tensor
 
     def forward(self, x, targets=None):

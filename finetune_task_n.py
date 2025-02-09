@@ -80,7 +80,7 @@ class oldCSTAConfig:
     miu_d = 0.1                         # distillation loss weight
     miu_t = 0.1                         # lt loss weight (currently not implemented)
     miu_s = 0.1                         # ls loss weight (currently not implemented)
-    lambda_1 = 0.2                      # new classifiers multiplying factor
+    lambda_1 = 1                        # new classifiers multiplying factor
     K = 5
     temporal_relations_path = "DATA/UCF101/tasks/task_1/temporal_relations.json"
     spatial_relations_path = "DATA/UCF101/tasks/task_1/spatial_relations.json"
@@ -99,8 +99,8 @@ class DatasetConfig:
 class TrainingConfigs:
     random_seed = 42
     num_training_epochs = 80
-    training_batch_size = 6
-    evaluation_batch_size = 6
+    training_batch_size = 12
+    evaluation_batch_size = 12
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False

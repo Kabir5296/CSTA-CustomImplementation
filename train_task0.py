@@ -13,6 +13,7 @@ import torch.optim as optim
 from warnings import filterwarnings
 import torchvision.transforms as transforms
 import math
+from src import check_specific_gradients, init_weights
 
 logging.basicConfig(
     filename="logs/train.log",
@@ -143,31 +144,7 @@ class VideoDataset(Dataset):
             "input_frames": processed_frames,
             "label": self.label2id[label],
         }
-
-def init_weights(m):
-    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
-        nn.init.kaiming_normal_(m.weight, a=math.sqrt(5))
-        if m.bias is not None:
-            nn.init.zeros_(m.bias)
-            
-def check_specific_gradients(model):
-    components = {
-        'patch_embed': model.patch_embed,
-        'temporal_msa': model.blocks[0].temporal_msa,
-        'spatial_msa': model.blocks[0].spatial_msa,
-        'temporal_adapters': model.temporal_adapters[0],
-        'spatial_adapters': model.spatial_adapters[0],
-        'classifier': model.classifiers[-1]
-    }
-    with open("logs/gradients.txt", "+a") as f:
-        f.write("New Batch\n\n")
-        for name, component in components.items():
-            grad_norm = 0
-            for p in component.parameters():
-                if p.grad is not None:
-                    grad_norm += p.grad.norm().item()
-                    f.write(f"{name} gradient norm: {grad_norm:.6f}\n")
-
+    
 def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     model.train()
     running_loss = 0.0

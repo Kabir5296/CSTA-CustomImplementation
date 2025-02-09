@@ -98,19 +98,20 @@ class DatasetConfig:
 
 class TrainingConfigs:
     random_seed = 42
-    num_training_epochs = 80
-    training_batch_size = 12
-    evaluation_batch_size = 12
+    num_training_epochs = 200
+    training_batch_size = 5
+    evaluation_batch_size = 5
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 5e-5
+    learning_rate = 1e-5
     warmup_epochs = 15
     adamw_betas = (0.9, 0.999)
     weight_decay = 1e-5
     eta_min = 1e-10
+    patience = 4
     T_max = num_training_epochs // 4
-    model_output_dir = "Outputs/Models/Task1/Trial1"
+    model_output_dir = "Outputs/Models/Task1/Trial2"
 
 def main():
     set_all_seeds(TrainingConfigs.random_seed)
@@ -185,6 +186,7 @@ def main():
     
     best_loss = float('inf')
     best_acc = 0.0
+    counter = 0
     for epoch in range(TrainingConfigs.num_training_epochs):
         train_loss, _ = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
         eval_loss, eval_acc = evaluate(model, eval_dataloader, accelerator, epoch)
@@ -199,6 +201,10 @@ def main():
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
+        else:
+            counter += 0
+            if counter > TrainingConfigs.patience:
+                break
         if epoch > TrainingConfigs.warmup_epochs:
             scheduler.step()
     accelerator.end_training()

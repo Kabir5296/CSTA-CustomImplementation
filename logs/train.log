@@ -1,0 +1,156 @@
+INFO:root:
+
+Finetuning starting on: 10/02/2025, 00:03:36
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55990141
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Finetuning starting on: 10/02/2025, 00:03:49
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55990141
+INFO:root:--------------------------------------------------
+INFO:root:
+
+Finetuning starting on: 10/02/2025, 00:04:05
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55990141
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 4.1136, Average Accuracy: 0.0395, Samples: 1013
+INFO:root:Evaluation Epoch 0 - Average Loss: 4.0082, Average Accuracy: 0.1327, Samples: 211
+INFO:root:Epoch 1 - Average Loss: 4.1024, Average Accuracy: 0.0415, Samples: 1013
+INFO:root:Evaluation Epoch 1 - Average Loss: 3.9634, Average Accuracy: 0.1848, Samples: 211
+INFO:root:Epoch 2 - Average Loss: 4.0959, Average Accuracy: 0.0454, Samples: 1013
+INFO:root:Evaluation Epoch 2 - Average Loss: 3.9774, Average Accuracy: 0.1706, Samples: 211
+INFO:root:Epoch 3 - Average Loss: 4.0924, Average Accuracy: 0.0464, Samples: 1013
+INFO:root:Evaluation Epoch 3 - Average Loss: 3.9759, Average Accuracy: 0.1754, Samples: 211
+INFO:root:Epoch 4 - Average Loss: 4.0894, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 4 - Average Loss: 3.9706, Average Accuracy: 0.1706, Samples: 211
+INFO:root:Epoch 5 - Average Loss: 4.0494, Average Accuracy: 0.1076, Samples: 1013
+INFO:root:Evaluation Epoch 5 - Average Loss: 3.9551, Average Accuracy: 0.2227, Samples: 211
+INFO:root:Epoch 6 - Average Loss: 3.9399, Average Accuracy: 0.2478, Samples: 1013
+INFO:root:Evaluation Epoch 6 - Average Loss: 3.8942, Average Accuracy: 0.2938, Samples: 211
+INFO:root:Epoch 7 - Average Loss: 3.8482, Average Accuracy: 0.3425, Samples: 1013
+INFO:root:Evaluation Epoch 7 - Average Loss: 3.8250, Average Accuracy: 0.3839, Samples: 211
+INFO:root:Epoch 8 - Average Loss: 3.8055, Average Accuracy: 0.3672, Samples: 1013
+INFO:root:Evaluation Epoch 8 - Average Loss: 3.8198, Average Accuracy: 0.3602, Samples: 211
+INFO:root:Epoch 9 - Average Loss: 3.7801, Average Accuracy: 0.3919, Samples: 1013
+INFO:root:Evaluation Epoch 9 - Average Loss: 3.8263, Average Accuracy: 0.3602, Samples: 211
+INFO:root:Epoch 10 - Average Loss: 3.7451, Average Accuracy: 0.4314, Samples: 1013
+INFO:root:Evaluation Epoch 10 - Average Loss: 3.7905, Average Accuracy: 0.4076, Samples: 211
+INFO:root:Epoch 11 - Average Loss: 3.7028, Average Accuracy: 0.4946, Samples: 1013
+INFO:root:Evaluation Epoch 11 - Average Loss: 3.7782, Average Accuracy: 0.4313, Samples: 211
+INFO:root:Epoch 12 - Average Loss: 3.6617, Average Accuracy: 0.5370, Samples: 1013
+INFO:root:Evaluation Epoch 12 - Average Loss: 3.7438, Average Accuracy: 0.4692, Samples: 211
+INFO:root:Epoch 13 - Average Loss: 3.6370, Average Accuracy: 0.5489, Samples: 1013
+INFO:root:Evaluation Epoch 13 - Average Loss: 3.7531, Average Accuracy: 0.4360, Samples: 211
+INFO:root:Epoch 14 - Average Loss: 3.6184, Average Accuracy: 0.5647, Samples: 1013
+INFO:root:Evaluation Epoch 14 - Average Loss: 3.7338, Average Accuracy: 0.4502, Samples: 211
+INFO:root:Epoch 15 - Average Loss: 3.6061, Average Accuracy: 0.5726, Samples: 1013
+INFO:root:Evaluation Epoch 15 - Average Loss: 3.7192, Average Accuracy: 0.4929, Samples: 211
+INFO:root:Epoch 16 - Average Loss: 3.5995, Average Accuracy: 0.5735, Samples: 1013
+INFO:root:Evaluation Epoch 16 - Average Loss: 3.7286, Average Accuracy: 0.4787, Samples: 211
+INFO:root:Epoch 17 - Average Loss: 3.5917, Average Accuracy: 0.5765, Samples: 1013
+INFO:root:Evaluation Epoch 17 - Average Loss: 3.7184, Average Accuracy: 0.4739, Samples: 211
+INFO:root:Epoch 18 - Average Loss: 3.5865, Average Accuracy: 0.5805, Samples: 1013
+INFO:root:Evaluation Epoch 18 - Average Loss: 3.7129, Average Accuracy: 0.4692, Samples: 211
+INFO:root:Epoch 19 - Average Loss: 3.5808, Average Accuracy: 0.5854, Samples: 1013
+INFO:root:Evaluation Epoch 19 - Average Loss: 3.7027, Average Accuracy: 0.4929, Samples: 211
+INFO:root:Epoch 20 - Average Loss: 3.5757, Average Accuracy: 0.5864, Samples: 1013
+INFO:root:Evaluation Epoch 20 - Average Loss: 3.7163, Average Accuracy: 0.4645, Samples: 211
+INFO:root:Epoch 21 - Average Loss: 3.5725, Average Accuracy: 0.5884, Samples: 1013
+INFO:root:Evaluation Epoch 21 - Average Loss: 3.7119, Average Accuracy: 0.4692, Samples: 211
+INFO:root:Epoch 22 - Average Loss: 3.5691, Average Accuracy: 0.5913, Samples: 1013
+INFO:root:Evaluation Epoch 22 - Average Loss: 3.7049, Average Accuracy: 0.4787, Samples: 211
+INFO:root:Epoch 23 - Average Loss: 3.5669, Average Accuracy: 0.5913, Samples: 1013
+INFO:root:Evaluation Epoch 23 - Average Loss: 3.7143, Average Accuracy: 0.4645, Samples: 211
+INFO:root:Epoch 24 - Average Loss: 3.5636, Average Accuracy: 0.5943, Samples: 1013
+INFO:root:Evaluation Epoch 24 - Average Loss: 3.7002, Average Accuracy: 0.4739, Samples: 211
+INFO:root:Epoch 25 - Average Loss: 3.5624, Average Accuracy: 0.5933, Samples: 1013
+INFO:root:Evaluation Epoch 25 - Average Loss: 3.6971, Average Accuracy: 0.4787, Samples: 211
+INFO:root:Epoch 26 - Average Loss: 3.5586, Average Accuracy: 0.5953, Samples: 1013
+INFO:root:Evaluation Epoch 26 - Average Loss: 3.7073, Average Accuracy: 0.4692, Samples: 211
+INFO:root:Epoch 27 - Average Loss: 3.5575, Average Accuracy: 0.5962, Samples: 1013
+INFO:root:Evaluation Epoch 27 - Average Loss: 3.7043, Average Accuracy: 0.4692, Samples: 211
+INFO:root:Epoch 28 - Average Loss: 3.5562, Average Accuracy: 0.5962, Samples: 1013
+INFO:root:Evaluation Epoch 28 - Average Loss: 3.6918, Average Accuracy: 0.4834, Samples: 211
+INFO:root:Epoch 29 - Average Loss: 3.5549, Average Accuracy: 0.5972, Samples: 1013
+INFO:root:Evaluation Epoch 29 - Average Loss: 3.6997, Average Accuracy: 0.4692, Samples: 211
+INFO:root:
+
+Finetuning starting on: 10/02/2025, 03:08:58
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55990141
+INFO:root:--------------------------------------------------
+INFO:root:Epoch 0 - Average Loss: 4.1110, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 0 - Average Loss: 3.9479, Average Accuracy: 0.1991, Samples: 211
+INFO:root:Epoch 1 - Average Loss: 4.0956, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 1 - Average Loss: 3.9376, Average Accuracy: 0.2085, Samples: 211
+INFO:root:Epoch 2 - Average Loss: 4.0921, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 2 - Average Loss: 3.9344, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 3 - Average Loss: 4.0904, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 3 - Average Loss: 3.9344, Average Accuracy: 0.2085, Samples: 211
+INFO:root:Epoch 4 - Average Loss: 4.0895, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 4 - Average Loss: 3.9345, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 5 - Average Loss: 4.0888, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 5 - Average Loss: 3.9347, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 6 - Average Loss: 4.0883, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 6 - Average Loss: 3.9344, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 7 - Average Loss: 4.0879, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 7 - Average Loss: 3.9350, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 8 - Average Loss: 4.0876, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 8 - Average Loss: 3.9350, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 9 - Average Loss: 4.0874, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 9 - Average Loss: 3.9349, Average Accuracy: 0.2133, Samples: 211
+INFO:root:Epoch 10 - Average Loss: 4.0871, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 10 - Average Loss: 3.9361, Average Accuracy: 0.2085, Samples: 211
+INFO:root:Epoch 11 - Average Loss: 4.0868, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 11 - Average Loss: 3.9376, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 12 - Average Loss: 4.0866, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 12 - Average Loss: 3.9366, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 13 - Average Loss: 4.0862, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 13 - Average Loss: 3.9366, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 14 - Average Loss: 4.0859, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 14 - Average Loss: 3.9366, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 15 - Average Loss: 4.0854, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 15 - Average Loss: 3.9367, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 16 - Average Loss: 4.0844, Average Accuracy: 0.0474, Samples: 1013
+INFO:root:Evaluation Epoch 16 - Average Loss: 3.9370, Average Accuracy: 0.2038, Samples: 211
+INFO:root:Epoch 17 - Average Loss: 4.0796, Average Accuracy: 0.0602, Samples: 1013
+INFO:root:Evaluation Epoch 17 - Average Loss: 3.9324, Average Accuracy: 0.2133, Samples: 211

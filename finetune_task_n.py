@@ -188,7 +188,6 @@ def main():
     best_loss = float('inf')
     best_acc = 0.0
     counter = 0
-    counter = 0
     for epoch in range(TrainingConfigs.num_training_epochs):
         train_loss, _ = train_epoch(model, train_dataloader, optimizer, accelerator, epoch)
         eval_loss, eval_acc = evaluate(model, eval_dataloader, accelerator, epoch)
@@ -203,10 +202,6 @@ def main():
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
-        else:
-            counter += 0
-            if counter > TrainingConfigs.patience:
-                break
         else:
             counter += 0
             if counter > TrainingConfigs.patience:

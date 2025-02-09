@@ -166,7 +166,7 @@ def check_specific_gradients(model):
             for p in component.parameters():
                 if p.grad is not None:
                     grad_norm += p.grad.norm().item()
-            f.write(f"{name} gradient norm: {grad_norm:.6f}\n")
+                    f.write(f"{name} gradient norm: {grad_norm:.6f}\n")
 
 def train_epoch(model, train_dataloader, optimizer, accelerator, epoch):
     model.train()

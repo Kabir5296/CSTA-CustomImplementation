@@ -3,27 +3,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 
-# class Adapter(nn.Module):
-#     def __init__(self, dim, reduction_factor=4):
-#         super().__init__()
-#         self.fc_down = nn.Linear(dim, dim // reduction_factor)
-#         self.fc_up = nn.Linear(dim // reduction_factor, dim)
-#         self.gelu = nn.GELU()
-#         self.norm = nn.LayerNorm(dim)
-
-#     def forward(self, x):
-#         return self.norm(x + self.fc_up(self.gelu(self.fc_down(x))))
-
 class Adapter(nn.Module):
     def __init__(self, dim, reduction_factor=4):
         super().__init__()
         self.fc_down = nn.Linear(dim, dim // reduction_factor)
         self.fc_up = nn.Linear(dim // reduction_factor, dim)
         self.gelu = nn.GELU()
-        # self.norm = nn.LayerNorm(dim)
+        self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
-        return self.fc_up(self.gelu(self.fc_down(x)))
+        return self.norm(x + self.fc_up(self.gelu(self.fc_down(x))))
 
 class TemporalMultiheadAttention(nn.Module):
     def __init__(self, dim, num_heads=8):

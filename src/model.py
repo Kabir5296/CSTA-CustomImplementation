@@ -109,11 +109,9 @@ class CSTA(nn.Module):
         
         if temporal_relations_path and spatial_relations_path is not None:
             with open(temporal_relations_path, 'r') as f:
-                temporal_relations = json.load(f)
-            self.temporal_relations = {int(key): torch.tensor(value) for key, value in temporal_relations.items()}
+                self.temporal_relations = json.load(f)
             with open(spatial_relations_path, 'r') as f:
-                spatial_relations = json.load(f)
-            self.spatial_relations = {int(key): torch.tensor(value) for key, value in spatial_relations.items()}
+                self.spatial_relations = json.load(f)
 
     def get_numbers(self):
         total_blocks = len(self.blocks)
@@ -305,6 +303,8 @@ class CSTA(nn.Module):
                 total_loss.append(self.miu_d * distil_loss) if distil_loss is not None else None
             
             if self.calculate_lt_ls_loss:
+                self.temporal_relations = {int(key): torch.tensor(value, device = next(self.parameters()).device) for key, value in self.temporal_relations.items()}
+                self.spatial_relations = {int(key): torch.tensor(value, device = next(self.parameters()).device) for key, value in self.spatial_relations.items()}
                 self.full_features_old = x_old
                 
                 if len(self.classifiers) < 2:
@@ -332,8 +332,8 @@ class CSTA(nn.Module):
                 # SnK and TnK have dimensions B, classes since they're nothing but classifiers output mul by a scalar
                 RsnK, RtnK = self._get_relations(SnK, TnK, self.full_features, B, T, self.classifiers[-1])
                 
-                lt_loss = 1 - F.cosine_similarity(RtnK, Rtn)
-                ls_loss = 1 - F.cosine_similarity(RsnK, Rsn)
+                lt_loss = (1 - F.cosine_similarity(RtnK, Rtn)).mean()
+                ls_loss = (1 - F.cosine_similarity(RsnK, Rsn)).mean()
                 total_loss.append(self.miu_t * lt_loss) if lt_loss is not None else None
                 total_loss.append(self.miu_s * ls_loss) if ls_loss is not None else None
             

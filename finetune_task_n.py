@@ -81,8 +81,10 @@ class oldCSTAConfig:
     miu_t = 0.1                         # lt loss weight (currently not implemented)
     miu_s = 0.1                         # ls loss weight (currently not implemented)
     lambda_1 = 0.2                      # new classifiers multiplying factor
-
-state_dict_path = "Outputs/Models/Trial_51_run2/best_model.pth"
+    K = 5
+    temporal_relations_path = "DATA/UCF101/tasks/task_1/temporal_relations.json"
+    spatial_relations_path = "DATA/UCF101/tasks/task_1/spatial_relations.json"
+    state_dict_path = "Outputs/Models/Trial_51_run2/best_model.pth"
 
 class DatasetConfig:
     img_size = oldCSTAConfig.img_size
@@ -150,7 +152,7 @@ def main():
     # you must have n adapters per blocks
     # distil, ls, and lt losses calculations are set to True
     model = CSTA(**vars(oldCSTAConfig))
-    model.load_state_dict(torch.load(state_dict_path))
+    model.load_state_dict(torch.load(oldCSTAConfig.state_dict_path))
     
     # add new task components with new classifier of num_labels size
     model.add_new_task_components(num_old_task_classes + num_new_task_classes)

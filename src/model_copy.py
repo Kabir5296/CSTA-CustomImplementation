@@ -332,8 +332,8 @@ class CSTA(nn.Module):
                 # SnK and TnK have dimensions B, classes since they're nothing but classifiers output mul by a scalar
                 RsnK, RtnK = self._get_relations(SnK, TnK, self.full_features, B, T, self.classifiers[-1])
                 
-                lt_loss = 1 - F.cosine_similarity(RtnK, Rtn)
-                ls_loss = 1 - F.cosine_similarity(RsnK, Rsn)
+                lt_loss = (1 - F.cosine_similarity(RtnK, Rtn)).mean()
+                ls_loss = (1 - F.cosine_similarity(RsnK, Rsn)).mean()
                 total_loss.append(self.miu_t * lt_loss) if lt_loss is not None else None
                 total_loss.append(self.miu_s * ls_loss) if ls_loss is not None else None
             

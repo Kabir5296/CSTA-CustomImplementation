@@ -1,7 +1,8 @@
 **/*__pycache__
 venv
 **/*.ipynb
-DATA/
+DATA/UCF101/
+DATA/UCF101/tasks/
 **/*.txt
 Outputs/*
 # **/*.log

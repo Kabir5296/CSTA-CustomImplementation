@@ -77,14 +77,14 @@ class oldCSTAConfig:
     init_with_adapters = True           # for task 0, the model is initialized with one adapter per block
     calculate_distil_loss = False       # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False       # For task 0 training, no lt ls loss is needed
-    miu_d = 0.1                         # distillation loss weight
-    miu_t = 0.1                         # lt loss weight (currently not implemented)
-    miu_s = 0.1                         # ls loss weight (currently not implemented)
+    miu_d = 0.15                        # distillation loss weight
+    miu_t = 0.15                        # lt loss weight (currently not implemented)
+    miu_s = 0.15                        # ls loss weight (currently not implemented)
     lambda_1 = 1                        # new classifiers multiplying factor
     K = 5
     temporal_relations_path = "DATA/UCF101/tasks/task_1/temporal_relations.json"
     spatial_relations_path = "DATA/UCF101/tasks/task_1/spatial_relations.json"
-    state_dict_path = "Outputs/Models/Trial_51_run2/best_model.pth"
+    state_dict_path = "Outputs/Models/Trial_51_run3/best_model.pth"
 
 class DatasetConfig:
     img_size = oldCSTAConfig.img_size
@@ -104,7 +104,8 @@ class TrainingConfigs:
     dataloader_num_workers = 4
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
-    learning_rate = 1e-5
+    learning_rate = 5e-5
+    warmup_epochs = 15
     adamw_betas = (0.9, 0.999)
     weight_decay = 1e-5
     eta_min = 1e-10
@@ -155,7 +156,7 @@ def main():
     model.load_state_dict(torch.load(oldCSTAConfig.state_dict_path))
     
     # add new task components with new classifier of num_labels size
-    model.add_new_task_components(num_old_task_classes + num_new_task_classes)
+    model.add_new_task_components(num_new_task_classes)
     model.freeze_all_but_last()
     
     att = model.model_attributes
@@ -198,8 +199,8 @@ def main():
             accelerator.wait_for_everyone()
             unwrapped_model = accelerator.unwrap_model(model)
             torch.save(unwrapped_model.state_dict(), os.path.join(TrainingConfigs.model_output_dir, 'best_model.pth'))
-        
-        # scheduler.step()
+        if epoch > TrainingConfigs.warmup_epochs:
+            scheduler.step()
     accelerator.end_training()
     
 if __name__ == "__main__":

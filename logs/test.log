@@ -1,1 +1,3 @@
+Model Used: Outputs/Models/Trial_51_run2/best_model.pth, Test data path: DATA/UCF101/tasks/task_0/test.csv
 Average Loss: 3.1793,  Average Accuracy: 0.8018,  Samples: 974
+

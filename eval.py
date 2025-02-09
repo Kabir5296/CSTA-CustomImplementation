@@ -17,10 +17,6 @@ import math
 
 ucf_dataset_test_path = "DATA/UCF101/tasks/task_0/test.csv"
 
-# ucf_dataset_training_path = "DATA/UCF101/tasks/task_beta_0/train.csv"
-# ucf_dataset_test_path = "DATA/UCF101/tasks/task_beta_0/test.csv"
-# ucf_dataset_valid_path = "DATA/UCF101/tasks/task_beta_0/val.csv"
-
 ucf_test = pd.read_csv(ucf_dataset_test_path)
 
 all_labels = sorted(ucf_test['label'].unique().tolist())
@@ -124,11 +120,14 @@ def evaluate(model, eval_dataloader, accelerator):
     avg_acc = running_acc / total_samples
     progress_bar.close()
     with open("logs/test.log", "+a") as test_log:
-        test_log.write(f"Average Loss: {avg_loss:.4f}, "+f" Average Accuracy: {avg_acc:.4f}, "+f" Samples: {total_samples}")
+        test_log.write(f"Model Used: {state_dict_path}, Test data path: {ucf_dataset_test_path}\n")
+        test_log.write(f"Average Loss: {avg_loss:.4f}, "+f" Average Accuracy: {avg_acc:.4f}, "+f" Samples: {total_samples}\n\n")
     
     return avg_loss, avg_acc
 
 accelerator = Accelerator()
 model, test_dataloader = accelerator.prepare(model, test_dataloader)
 
+from warnings import filterwarnings
+filterwarnings("ignore")
 evaluate(model, test_dataloader, accelerator)

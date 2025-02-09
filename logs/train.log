@@ -472,3 +472,18 @@ INFO:root:total_classifiers : 2
 INFO:root:total_adapters : 48
 INFO:root:total_params : 55968592
 INFO:root:--------------------------------------------------
+INFO:root:
+
+Finetuning starting on: 09/02/2025, 11:48:03
+
+
+INFO:root:--------------------------------------------------
+INFO:root:total_blocks : 12
+INFO:root:adapters_per_block : 2
+INFO:root:current_task : 1
+INFO:root:total_temporal_adapters : 24
+INFO:root:total_spatial_adapters : 24
+INFO:root:total_classifiers : 2
+INFO:root:total_adapters : 48
+INFO:root:total_params : 55968592
+INFO:root:--------------------------------------------------

@@ -5,7 +5,8 @@ DOI : https://doi.org/10.48550/arXiv.2501.07236
 
 Custom Implementation By,
 ## A F M Mahfuzul Kabir
-Machine Learning Engineer, <b>ACI Limited, Bangladesh</b><br>
+Machine Learning Engineer,<br>
+<b>ACI Limited, Bangladesh</b><br>
 LinkedIn: https://www.linkedin.com/in/mahfuzulkabir/ <br>
 <a href="https://www.mahfuzulkabir.com/">mahfuzulkabir.com</a> <br>
 

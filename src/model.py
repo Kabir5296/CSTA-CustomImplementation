@@ -171,7 +171,7 @@ class CSTA(nn.Module):
                     param.requires_grad = False
 
     def get_distil_loss(self, old_logits, new_logits):
-        return F.kl_div(F.log_softmax(new_logits, dim=1), F.softmax(old_logits, dim=1), reduction='batchmean')
+        return F.kl_div(F.log_softmax(new_logits, dim=-1), F.softmax(old_logits, dim=-1), reduction='batchmean')
     
     def run_classifiers(self, x):
         outputs = []            
@@ -289,7 +289,7 @@ class CSTA(nn.Module):
         total_loss = []
         if targets is not None:
             accuracy = (predictions.argmax(-1) == targets).float().mean()
-            ce_loss = F.cross_entropy(predictions, targets)
+            ce_loss = F.cross_entropy(final_logits, targets)
             total_loss.append(ce_loss)
             x_old = x_old[:, :1, :].squeeze(1).reshape([B,T,self.dim]).mean(dim=1)
             

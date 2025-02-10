@@ -53,8 +53,8 @@ class CSTAConfig:
     calculate_distil_loss = False  # For task 0 training, no distillation loss is needed
     calculate_lt_lss_loss = False  # For task 0 training, no lt ls loss is needed
     miu_d = 0.1                    # distillation loss weight
-    miu_t = 0.1                    # lt loss weight (currently not implemented)
-    miu_s = 0.1                    # ls loss weight (currently not implemented)
+    miu_t = 0.1                    # lt loss weight
+    miu_s = 0.1                    # ls loss weight
     lambda_1 = 0.2
 
 class DatasetConfig:

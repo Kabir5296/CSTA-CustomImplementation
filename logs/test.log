@@ -6,7 +6,7 @@ Average Loss: 3.1793,  Average Accuracy: 0.8018,  Samples: 974
 Model Used: Outputs/Models/Task1/Trial2/best_model.pth, Test data path: DATA/UCF101/tasks/task_0/test.csv
 Average Loss: 3.8525,  Average Accuracy: 0.3727,  Samples: 974
 
-# TASK 1 TEST DATA EVALUATION ON TASK 0 TRAINED MODEL
+# TASK 1 TEST DATA EVALUATION ON TASK 1 TRAINED MODEL
 Model Used: Outputs/Models/Task1/Trial2/best_model.pth, Test data path: DATA/UCF101/tasks/task_1/test.csv
 Average Loss: 3.4295,  Average Accuracy: 0.7273,  Samples: 165
 

@@ -11,3 +11,5 @@ LinkedIn: https://www.linkedin.com/in/mahfuzulkabir/ <br>
 <a href="https://www.mahfuzulkabir.com/">mahfuzulkabir.com</a> <br>
 
 ## Documentation Coming Soon!
+
+Noice: The codebase is a work in progress. While almost the entire model architecture is done, there are some significant portions of training connections that are work in progress. Don't expect full replication of the results reported in the original paper. Thank you for visiting my repository! Leave a star if you find it useful.

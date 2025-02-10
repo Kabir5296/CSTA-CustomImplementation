@@ -105,12 +105,11 @@ class TrainingConfigs:
     dataloader_pin_memory = False
     dataloader_persistent_workers = False
     learning_rate = 1e-5
-    warmup_epochs = 15
+    warmup_epochs = 30
     adamw_betas = (0.9, 0.999)
-    weight_decay = 1e-5
+    weight_decay = 5e-5
     eta_min = 1e-10
-    patience = 4
-    patience = 4
+    patience = 15
     T_max = num_training_epochs // 4
     model_output_dir = "Outputs/Models/Task1/Trial2"
 

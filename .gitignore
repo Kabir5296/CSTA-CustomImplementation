@@ -1,8 +1,12 @@
 **/*__pycache__
 venv
 **/*.ipynb
-DATA/UCF101/
-DATA/UCF101/tasks/
+DATA/UCF101/**/*
 **/*.txt
 Outputs/*
-# **/*.log
+!losses.ipynb
+!DATA/UCF101/tasks**
+DATA/UCF101/tasks/task_2
+DATA/UCF101/tasks/task_3
+DATA/UCF101/tasks/task_4
+DATA/UCF101/tasks/task_5
